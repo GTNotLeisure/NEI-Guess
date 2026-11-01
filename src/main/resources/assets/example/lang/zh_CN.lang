@@ -1,0 +1,6 @@
+example.gui.config.general=总览配置
+example.gui.config.general.debug=调试设置
+example.gui.config.general.debug.tooltip=开发与调试
+
+example.gui.config.general.debug.enabledebugmode=调试模式
+example.gui.config.general.debug.enabledebugmode.tooltip=启用调试日志输出
