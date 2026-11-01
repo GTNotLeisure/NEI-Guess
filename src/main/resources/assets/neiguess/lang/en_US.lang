@@ -1,0 +1,151 @@
+neiguess.gui.config.general=General Config
+
+neiguess.gui.config.general.panel=Suggestion Panel
+neiguess.gui.config.general.panel.tooltip=The panel shown above the NEI search box.
+neiguess.gui.config.general.panel.enabled=Enabled
+neiguess.gui.config.general.panel.enabled.tooltip=Master switch. Chat links are controlled separately.
+neiguess.gui.config.general.panel.rowsperpage=Rows Per Page
+neiguess.gui.config.general.panel.rowsperpage.tooltip=Longer lists are split into pages.
+neiguess.gui.config.general.panel.panelwidth=Panel Width
+neiguess.gui.config.general.panel.panelwidth.tooltip=Minimum width in pixels, grows with the content.
+neiguess.gui.config.general.panel.hoverselects=Hover Selects
+neiguess.gui.config.general.panel.hoverselects.tooltip=Hovering a row selects it; Enter then searches it.
+neiguess.gui.config.general.panel.ghosttext=Ghost Completion
+neiguess.gui.config.general.panel.ghosttext.tooltip=Grey completion text in the search box, Tab accepts it.
+neiguess.gui.config.general.panel.correction=Spelling Correction
+neiguess.gui.config.general.panel.correction.tooltip=Suggest the closest name when nothing matches.
+neiguess.gui.config.general.panel.syntaxhints=Syntax Hints
+neiguess.gui.config.general.panel.syntaxhints.tooltip=Typing @ or $ lists mods / ore dictionary entries.
+neiguess.gui.config.general.panel.prefixonly=Prefix Only
+neiguess.gui.config.general.panel.prefixonly.tooltip=Only match the start of words.
+neiguess.gui.config.general.panel.pagingneedsemptyinput=Arrows Page Only When Empty
+neiguess.gui.config.general.panel.pagingneedsemptyinput.tooltip=Left/Right keep moving the cursor while you type.
+neiguess.gui.config.general.panel.pagingkeys=Paging Keys
+neiguess.gui.config.general.panel.pagingkeys.tooltip=LWJGL key names, PRIOR = PageUp, NEXT = PageDown.
+neiguess.gui.config.general.panel.showonautofocus=Open On Auto Focus
+neiguess.gui.config.general.panel.showonautofocus.tooltip=Also open when NEI focuses the search box by itself.
+neiguess.gui.config.general.panel.closeafterapply=Leave Box After Search
+neiguess.gui.config.general.panel.closeafterapply.tooltip=Unfocus the search box after picking a row so the results are visible.
+neiguess.gui.config.general.panel.maxhistory=History Size
+neiguess.gui.config.general.panel.maxhistory.tooltip=How many search words are kept.
+
+neiguess.gui.config.general.quota=Quotas
+neiguess.gui.config.general.quota.tooltip=Rows per source on the first page.
+neiguess.gui.config.general.quota.recent=Recent
+neiguess.gui.config.general.quota.recent.tooltip=Recently searched words.
+neiguess.gui.config.general.quota.quest=Quest
+neiguess.gui.config.general.quota.quest.tooltip=Items of unfinished quests.
+neiguess.gui.config.general.quota.frequent=Frequent
+neiguess.gui.config.general.quota.frequent.tooltip=Most searched words.
+neiguess.gui.config.general.quota.chat=Chat
+neiguess.gui.config.general.quota.chat.tooltip=Items mentioned in chat, 0 = own page only.
+neiguess.gui.config.general.quota.random=Recommended
+neiguess.gui.config.general.quota.random.tooltip=Random picks from the recommended words.
+neiguess.gui.config.general.quota.favorite=Favorites
+neiguess.gui.config.general.quota.favorite.tooltip=Always on top.
+neiguess.gui.config.general.quota.pick=Last Pick
+neiguess.gui.config.general.quota.pick.tooltip=Items you opened after the same search.
+neiguess.gui.config.general.quota.sequence=Source Order
+neiguess.gui.config.general.quota.sequence.tooltip=Top to bottom; sources of other mods by id.
+neiguess.gui.config.general.quota.extra=Other Sources
+neiguess.gui.config.general.quota.extra.tooltip=Quotas for sources of other mods, id=count.
+
+neiguess.gui.config.general.sources=Sources
+neiguess.gui.config.general.sources.tooltip=Turn sources on or off.
+neiguess.gui.config.general.sources.recent=Recent
+neiguess.gui.config.general.sources.recent.tooltip=Recently searched words.
+neiguess.gui.config.general.sources.quest=Quests
+neiguess.gui.config.general.sources.quest.tooltip=BetterQuesting quests.
+neiguess.gui.config.general.sources.questskiproots=Skip Root Quests
+neiguess.gui.config.general.sources.questskiproots.tooltip=Ignore quests without prerequisites.
+neiguess.gui.config.general.sources.frequent=Frequent
+neiguess.gui.config.general.sources.frequent.tooltip=Most searched words.
+neiguess.gui.config.general.sources.random=Recommended
+neiguess.gui.config.general.sources.random.tooltip=Recommended words.
+neiguess.gui.config.general.sources.chat=Chat
+neiguess.gui.config.general.sources.chat.tooltip=Remember items mentioned in player chat.
+
+neiguess.gui.config.general.chat=Chat Links
+neiguess.gui.config.general.chat.tooltip=Clickable item names in chat.
+neiguess.gui.config.general.chat.links=Enabled
+neiguess.gui.config.general.chat.links.tooltip=Underline item names, ids, ore names and mod names.
+neiguess.gui.config.general.chat.linksonsystemmessages=System Messages
+neiguess.gui.config.general.chat.linksonsystemmessages.tooltip=Also process announcements and achievements.
+neiguess.gui.config.general.chat.keepexistingclicks=Keep Existing Clicks
+neiguess.gui.config.general.chat.keepexistingclicks.tooltip=Text that already has a click action keeps it.
+neiguess.gui.config.general.chat.modifierkeys=Modifier Keys
+neiguess.gui.config.general.chat.modifierkeys.tooltip=Ctrl+click = usages, Alt+click = copy id.
+neiguess.gui.config.general.chat.hoverpreview=Hover Preview
+neiguess.gui.config.general.chat.hoverpreview.tooltip=Show the item tooltip when hovering a link.
+neiguess.gui.config.general.chat.asciiwordboundary=Whole English Words
+neiguess.gui.config.general.chat.asciiwordboundary.tooltip=Coal does not match inside Coalition.
+
+neiguess.gui.config.general.words=Word Lists
+neiguess.gui.config.general.words.tooltip=Bigger lists go to config/neiguess/lexicon/*.json
+neiguess.gui.config.general.words.recommendwords=Recommended Words
+neiguess.gui.config.general.words.recommendwords.tooltip=Mod ids, names, item names or NEI queries.
+neiguess.gui.config.general.words.modaliases=Mod Aliases
+neiguess.gui.config.general.words.modaliases.tooltip=alias=modid
+neiguess.gui.config.general.words.orealiases=Ore Aliases
+neiguess.gui.config.general.words.orealiases.tooltip=alias=$oreName
+
+neiguess.gui.config.general.debug=Debug Settings
+neiguess.gui.config.general.debug.tooltip=Options for development and debugging.
+neiguess.gui.config.general.debug.enabledebugmode=Debug Mode
+neiguess.gui.config.general.debug.enabledebugmode.tooltip=Enable debug print log output.
+
+neiguess.source.recent=Recent
+neiguess.source.quest=Quest
+neiguess.source.frequent=Often
+neiguess.source.chat=Chat
+neiguess.source.random=Tip
+neiguess.source.mod=Mod
+neiguess.source.ore=Ore
+neiguess.source.favorite=Fav
+neiguess.source.pick=Last
+
+neiguess.page.mixed=Mixed
+neiguess.page.search=Search
+neiguess.filter.all=All
+neiguess.filter.item=Items
+neiguess.tooltip.query=Searches: %s
+
+neiguess.badge.pick=opened last time
+neiguess.badge.item=item
+neiguess.badge.didYouMean=did you mean
+neiguess.badge.direct=search as is
+
+neiguess.help.1=Left click / Enter   search
+neiguess.help.2=Right click          favorite (pinned on top)
+neiguess.help.3=Shift + right click  forget this word
+neiguess.help.4=Wheel / Left Right   next page
+neiguess.help.5=PageUp / PageDown    next page
+neiguess.help.6=Tab                  accept grey completion
+neiguess.help.7=Ctrl + Tab           page / filter while typing
+neiguess.help.8=Up / Down            NEI search history
+
+neiguess.chat.hint=Click: recipes, Ctrl: usages, Alt: copy
+neiguess.chat.copied=Copied %s
+neiguess.chat.unknownItem=Unknown item %s
+neiguess.chat.noRecipe=NEI has no recipe for %s
+
+neiguess.cmd.exported=Search history exported to %s
+neiguess.cmd.exportFailed=Export failed: %s
+neiguess.cmd.banned=%s will not be suggested anymore
+neiguess.cmd.unbannedAll=Restored %s banned words
+neiguess.cmd.unbanned=Restored %s
+neiguess.cmd.notBanned=%s is not banned
+neiguess.cmd.favOn=Added %s to favorites
+neiguess.cmd.favOff=Removed %s from favorites
+neiguess.cmd.stats=%s words, %s favorites, %s banned, %s quest views, %s item names indexed
+neiguess.cmd.reloaded=Word lists reloaded from %s
+neiguess.cmd.questNone=No quest viewed yet, open one in the quest book first
+neiguess.cmd.quest=Last viewed quest %s needs: %s
+neiguess.cmd.help.1=/neiguess show <modid:name[@meta]>  open recipes
+neiguess.cmd.help.2=/neiguess quest   search the items of the last viewed quest
+neiguess.cmd.help.3=/neiguess fav <word>   toggle a favorite
+neiguess.cmd.help.4=/neiguess ban <word>   never suggest a word
+neiguess.cmd.help.5=/neiguess unban <word|all>
+neiguess.cmd.help.6=/neiguess stats   counters
+neiguess.cmd.help.7=/neiguess export   search history as CSV
+neiguess.cmd.help.8=/neiguess reload   reload word lists

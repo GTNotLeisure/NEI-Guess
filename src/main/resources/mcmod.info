@@ -4,7 +4,7 @@
     {
       "modid": "${modId}",
       "name": "${modName}",
-      "description": "A Minecraft 1.7.10 Mod",
+      "description": "Browser-style search suggestions for the NEI search box: favorites, recent, quests, frequent, chat and recommended words, with pinyin, ore dictionary and mod name translation, plus clickable item names in chat. Client only.",
       "version": "${modVersion}",
       "mcversion": "${minecraftVersion}",
       "url": "",
@@ -12,8 +12,8 @@
       "authorList": [
         "HFstudio"
       ],
-      "credits": "",
-      "logoFile": "assets/example/icon.png",
+      "credits": "Based on JEI Guess by Maixr (MIT)",
+      "logoFile": "assets/neiguess/icon.png",
       "screenshots": [],
       "parent": ""
     }

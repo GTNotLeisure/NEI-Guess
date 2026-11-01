@@ -1,0 +1,396 @@
+{
+  "Adventure Backpack[adventurebackpack]": [
+    "探险背包"
+  ],
+  "AE2 Fluid Crafting[ae2fc]": [
+    "AE2流体合成套件"
+  ],
+  "AE2 Stuff[ae2stuff]": [
+    "应用能源附加机器"
+  ],
+  "AE2 Wireless Crafting Terminal[ae2wct]": [
+    "AE2无线合成终端"
+  ],
+  "Amun-Ra[amunra]": [
+    "阿蒙·拉"
+  ],
+  "Applied Energistics 2[appliedenergistics2]": [
+    "应用能源2",
+    "应用能源2-伪装板"
+  ],
+  "Automagy[automagy]": [
+    "自动化魔法"
+  ],
+  "Avaritia[avaritia]": [
+    "无尽贪婪"
+  ],
+  "Avaritiaddons[avaritiaddons]": [
+    "无尽贪婪拓展"
+  ],
+  "Backpack Edited for ModdedNetwork[backpack]": [
+    "背包"
+  ],
+  "BetterQuesting[betterquesting]": [
+    "更好的任务"
+  ],
+  "BiblioCraft[bibliocraft]": [
+    "BiblioCraft",
+    "BiblioCraft|灯具"
+  ],
+  "BiblioWoods Biomes O'Plenty Edition[bibliocraft]": [
+    "收藏馆(BoP组件)"
+  ],
+  "BiblioWoods Forestry Edition[bibliocraft]": [
+    "收藏馆:林业"
+  ],
+  "BiblioWoods Natura Edition[bibliocraft]": [
+    "收藏馆:Natura版"
+  ],
+  "Biomes O' Plenty[biomesoplenty]": [
+    "超多生态群系"
+  ],
+  "Blood Arsenal[bloodarsenal]": [
+    "血之兵工厂"
+  ],
+  "Blood Magic_ Alchemical Wizardry[alchemicalwizardry]": [
+    "血魔法"
+  ],
+  "Botania[botania]": [
+    "植物魔法"
+  ],
+  "BuildCraft[buildcraft]": [
+    "建筑|机器人",
+    "建筑",
+    "建筑|管道",
+    "建筑|伪装板",
+    "建筑|门"
+  ],
+  "Carpenter's Blocks[carpentersblocks]": [
+    "木匠方块"
+  ],
+  "Catwalks Mod[catwalks]": [
+    "栈桥"
+  ],
+  "Chisel[chisel]": [
+    "凿工艺|其它方块",
+    "凿工艺|石质方块",
+    "凿工艺|木质方块",
+    "凿工艺|金属方块",
+    "凿工艺|其它模组",
+    "凿工艺|楼梯方块",
+    "凿工艺|物品"
+  ],
+  "Compact Kinetic Wind and Water Generators[compactkineticgenerators]": [
+    "压缩动能发电机"
+  ],
+  "Computronics[computronics]": [
+    "计算机电子学"
+  ],
+  "Cooking For Blockheads[cookingforblockheads]": [
+    "懒人厨房"
+  ],
+  "Crops NH[cropsnh]": [
+    "Crops NH"
+  ],
+  "Crops++[bpp]": [
+    "更多作物"
+  ],
+  "Draconic Evolution[draconicevolution]": [
+    "龙之研究工具和武器",
+    "龙之研究方块和物品"
+  ],
+  "Electro-Magic Tools[emt]": [
+    "电子魔法工具"
+  ],
+  "Enhanced LootBags[enhancedlootbags]": [
+    "增强战利品袋"
+  ],
+  "Et Futurum Requiem[etfuturum]": [
+    "把未来带回现实|物品",
+    "把未来带回现实|方块"
+  ],
+  "Eternal Singularity[eternalsingularity]": [
+    "永恒奇点"
+  ],
+  "Example Mod[tinkersdefense]": [
+    "工匠之盾"
+  ],
+  "Extra Cells[extracells]": [
+    "更多存储单元2"
+  ],
+  "Extra Utilities[extrautils]": [
+    "更多实用设备",
+    "更多实用设备|小方块"
+  ],
+  "Fether[fether]": [
+    "Fether"
+  ],
+  "Flood Lights[floodlights]": [
+    "泛光灯"
+  ],
+  "Forbidden Magic[forbidden]": [
+    "禁忌魔法",
+    "留影水晶"
+  ],
+  "Forestry[forestry]": [
+    "林业|养蜂",
+    "林业|植树",
+    "林业",
+    "林业|蝴蝶"
+  ],
+  "Gadomancy[gadomancy]": [
+    "魔像密经"
+  ],
+  "Galacticraft Core[galacticraftcore]": [
+    "星系|方块",
+    "星系|物品"
+  ],
+  "GalaxySpace[galaxyspace]": [
+    "星空|方块",
+    "星空|物品",
+    "星空|装备"
+  ],
+  "Gendustry[gendustry]": [
+    "基因工业",
+    "基因工业|模板",
+    "基因工业|样本",
+    "基因工业|自定义蜂房"
+  ],
+  "Gravitation Suite Neo[gravisuiteneo]": [
+    "重力护甲"
+  ],
+  "GregTech[bartworks]": [
+    "GT2兼容",
+    "BartWorks跨时代",
+    "BartWorks生物工程",
+    "BartWorks超材料",
+    "BartWorks电路板改革"
+  ],
+  "GregTech[goodgenerator]": [
+    "更多发电机",
+    "[GG]多方块核反应堆"
+  ],
+  "GregTech[gregtech]": [
+    "机械方块",
+    "GT++方块",
+    "GT++机器",
+    "GT++杂项",
+    "GT++其他",
+    "GT++其他II",
+    "GT++工具",
+    "探矿仪",
+    "主体",
+    "材料",
+    "矿石",
+    "GT预构工具"
+  ],
+  "GregTech[gtneioreplugin]": [
+    "GT NEI 矿物插件"
+  ],
+  "GregTech[gtnhintergalactic]": [
+    "GTNH-银河"
+  ],
+  "GregTech[miscutils]": [
+    "[GT++] 方块",
+    "[GT++] 物品",
+    "[GT++] 战斗",
+    "[GT++] 工具",
+    "[GT++] 机器",
+    "[GT++] 物品 II",
+    "[GT++] 超多生物群系附属"
+  ],
+  "GregTech[tectech]": [
+    "TecTech",
+    "TecTech元物质"
+  ],
+  "GT_ New Horizons[dreamcraft]": [
+    "GTNH: 物品",
+    "GTNH: 铸形",
+    "GTNH: 铸件",
+    "GTNH: 神秘",
+    "GTNH: 电路",
+    "GTNH: 流体",
+    "GTNH: 方块",
+    "GTNH: 太空",
+    "GTNH: 太阳能",
+    "GTNH: 栏杆与外壳"
+  ],
+  "GTNH-Intergalactic[gtnhintergalactic]": [
+    "GTNH-银河"
+  ],
+  "I Will Find You[ifu]": [
+    "IFU"
+  ],
+  "Iron Tanks[irontank]": [
+    "更多储罐"
+  ],
+  "JABBA[jabba]": [
+    "更好的桶"
+  ],
+  "LittleTiles[littletiles]": [
+    "LT小方块"
+  ],
+  "Logistics Pipes[logisticspipes]": [
+    "物流管道"
+  ],
+  "LootGames[lootgames]": [
+    "奖励游戏"
+  ],
+  "Magic Bees[magicbees]": [
+    "魔法蜜蜂"
+  ],
+  "Malisis' Doors[malisisdoors]": [
+    "更多门"
+  ],
+  "ModernMarkings[modernmarkings]": [
+    "现代标志模组"
+  ],
+  "Natura[natura]": [
+    "自然"
+  ],
+  "NodalMechanics[nodalmechanics]": [
+    "节点学"
+  ],
+  "NotEnoughItems[nei]": [
+    "Fluids"
+  ],
+  "Open Modular Turrets[openmodularturrets]": [
+    "模块化炮塔"
+  ],
+  "OpenBlocks[openblocks]": [
+    "开放式方块"
+  ],
+  "OpenPrinter[openprinter]": [
+    "开放式打印机"
+  ],
+  "OpenSecurity[opensecurity]": [
+    "开放式保安"
+  ],
+  "Pam's Harvest the Nether[harvestthenether]": [
+    "下界丰收"
+  ],
+  "Pam's HarvestCraft[harvestcraft]": [
+    "潘马斯农场|杂项",
+    "潘马斯农场|作物",
+    "潘马斯农场|食物"
+  ],
+  "ProjectRed Core[projectred]": [
+    "红石计划:核心",
+    "红石计划:扩展",
+    "红石计划:运输",
+    "红石计划:勘矿",
+    "红石计划:照明",
+    "红石计划:逻辑",
+    "红石计划:线缆",
+    "红石计划:兼容",
+    "红石计划:制造"
+  ],
+  "Random Things[randomthings]": [
+    "随意作品"
+  ],
+  "RandomThings[randomthings]": [
+    "随意作品"
+  ],
+  "RemoteIO[remoteio]": [
+    "远程接口"
+  ],
+  "SG Craft[sgcraft]": [
+    "星际之门"
+  ],
+  "Steve's Carts 2[stevescarts]": [
+    "史蒂夫的矿车 2丨模块",
+    "史蒂夫的矿车 2丨组件",
+    "史蒂夫的矿车 2丨方块"
+  ],
+  "Steve's Factory Manager[stevesfactory]": [
+    "史蒂夫工厂管理"
+  ],
+  "Storage Drawers[storagedrawers]": [
+    "储物抽屉",
+    "储物抽屉|分拣升级"
+  ],
+  "Storage Drawers[storagedrawersbop]": [
+    "储物抽屉|BOP"
+  ],
+  "Storage Drawers[storagedrawerserebus]": [
+    "储物抽屉|混沌之地"
+  ],
+  "Storage Drawers[storagedrawersforestry]": [
+    "储物抽屉|林业"
+  ],
+  "Storage Drawers[storagedrawersmisc]": [
+    "储物抽屉|杂项"
+  ],
+  "Storage Drawers[storagedrawersnatura]": [
+    "储物抽屉|Natura"
+  ],
+  "StructureLib[structurelib]": [
+    "结构库"
+  ],
+  "Super Solar Panel[supersolarpanel]": [
+    "超级太阳能发电机"
+  ],
+  "Tainted Magic[taintedmagic]": [
+    "污秽魔法"
+  ],
+  "Thaumcraft[thaumcraft]": [
+    "神秘时代4"
+  ],
+  "Thaumic Boots[thaumicboots]": [
+    "神秘之靴"
+  ],
+  "Thaumic Energistics[thaumicenergistics]": [
+    "神秘能源"
+  ],
+  "Thaumic Exploration[thaumicexploration]": [
+    "神秘探险"
+  ],
+  "Thaumic Insurgence[thaumicinsurgence]": [
+    "神秘革命"
+  ],
+  "Thaumic Machina[thaumicmachina]": [
+    "神秘力学"
+  ],
+  "Thaumic Tinkerer[ttinkerer]": [
+    "神秘工匠"
+  ],
+  "ThaumicHorizons[thaumichorizons]": [
+    "神秘视界"
+  ],
+  "The Twilight Forest[twilightforest]": [
+    "暮色森林"
+  ],
+  "Tinkers Defense[tinkersdefense]": [
+    "工匠之盾"
+  ],
+  "Tinkers Mechworks[tmechworks]": [
+    "匠魂|机关"
+  ],
+  "Tinkers' Construct[tinker]": [
+    "匠魂|工具",
+    "匠魂|材料",
+    "匠魂|方块",
+    "匠魂|部件",
+    "匠魂|装备",
+    "匠魂|武器",
+    "匠魂小工具"
+  ],
+  "Tinkers' Defense[tinkersdefense]": [
+    "工匠之盾"
+  ],
+  "Tinkers' Gregworks[tgregworks]": [
+    "匠魂|GT材料"
+  ],
+  "Traveller's Gear[travellersgear]": [
+    "旅行者的装备栏"
+  ],
+  "WarpTheory[warptheory]": [
+    "神秘扭曲学"
+  ],
+  "Witchery[witchery]": [
+    "巫术"
+  ],
+  "Witching Gadgets[witchinggadgets]": [
+    "巫师宝具"
+  ]
+}

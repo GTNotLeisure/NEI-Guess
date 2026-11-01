@@ -1,6 +1,0 @@
-example.gui.config.general=General Config
-example.gui.config.general.debug=Debug Settings
-example.gui.config.general.debug.tooltip=Options for development and debugging.
-
-example.gui.config.general.debug.enabledebugmode=Debug Mode
-example.gui.config.general.debug.enabledebugmode.tooltip=Enable debug print log output.

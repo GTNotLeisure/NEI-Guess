@@ -1,0 +1,151 @@
+neiguess.gui.config.general=总览配置
+
+neiguess.gui.config.general.panel=候选面板
+neiguess.gui.config.general.panel.tooltip=NEI 搜索框上方弹出的候选面板
+neiguess.gui.config.general.panel.enabled=启用
+neiguess.gui.config.general.panel.enabled.tooltip=总开关，聊天链接由单独的开关控制
+neiguess.gui.config.general.panel.rowsperpage=每页行数
+neiguess.gui.config.general.panel.rowsperpage.tooltip=超过就分页
+neiguess.gui.config.general.panel.panelwidth=面板宽度
+neiguess.gui.config.general.panel.panelwidth.tooltip=最小宽度（像素），会按内容自动加宽
+neiguess.gui.config.general.panel.hoverselects=悬停即选中
+neiguess.gui.config.general.panel.hoverselects.tooltip=鼠标悬停选中该行，回车搜索它
+neiguess.gui.config.general.panel.ghosttext=灰字补全
+neiguess.gui.config.general.panel.ghosttext.tooltip=搜索框里显示灰色补全，Tab 接受
+neiguess.gui.config.general.panel.correction=拼写纠错
+neiguess.gui.config.general.panel.correction.tooltip=搜不到时提示「你是不是想搜…」
+neiguess.gui.config.general.panel.syntaxhints=语法提示
+neiguess.gui.config.general.panel.syntaxhints.tooltip=输入 @ 或 $ 时列出模组 / 矿物词典
+neiguess.gui.config.general.panel.prefixonly=仅前缀匹配
+neiguess.gui.config.general.panel.prefixonly.tooltip=只匹配开头（更像浏览器地址栏）
+neiguess.gui.config.general.panel.pagingneedsemptyinput=方向键仅空框翻页
+neiguess.gui.config.general.panel.pagingneedsemptyinput.tooltip=有文字时 ←/→ 留给光标移动
+neiguess.gui.config.general.panel.pagingkeys=翻页键
+neiguess.gui.config.general.panel.pagingkeys.tooltip=LWJGL 键名，PRIOR = PageUp，NEXT = PageDown
+neiguess.gui.config.general.panel.showonautofocus=自动聚焦时也弹出
+neiguess.gui.config.general.panel.showonautofocus.tooltip=NEI 打开界面自动聚焦搜索框时也弹出面板
+neiguess.gui.config.general.panel.closeafterapply=搜索后离开搜索框
+neiguess.gui.config.general.panel.closeafterapply.tooltip=点了候选后取消聚焦，让结果完整可见
+neiguess.gui.config.general.panel.maxhistory=历史条数
+neiguess.gui.config.general.panel.maxhistory.tooltip=本地保存多少个搜索词
+
+neiguess.gui.config.general.quota=配额
+neiguess.gui.config.general.quota.tooltip=第一页（混合页）每个来源的条数
+neiguess.gui.config.general.quota.recent=最近
+neiguess.gui.config.general.quota.recent.tooltip=最近搜过的词
+neiguess.gui.config.general.quota.quest=任务
+neiguess.gui.config.general.quota.quest.tooltip=未完成任务所需物品
+neiguess.gui.config.general.quota.frequent=常搜
+neiguess.gui.config.general.quota.frequent.tooltip=搜索次数最多的词
+neiguess.gui.config.general.quota.chat=聊天
+neiguess.gui.config.general.quota.chat.tooltip=聊天中提到的物品，0 = 只在自己的整页出现
+neiguess.gui.config.general.quota.random=推荐
+neiguess.gui.config.general.quota.random.tooltip=从推荐词池随机抽取
+neiguess.gui.config.general.quota.favorite=收藏
+neiguess.gui.config.general.quota.favorite.tooltip=永远排在最前
+neiguess.gui.config.general.quota.pick=上次
+neiguess.gui.config.general.quota.pick.tooltip=上次搜同一个词后你点开的物品
+neiguess.gui.config.general.quota.sequence=来源顺序
+neiguess.gui.config.general.quota.sequence.tooltip=从上到下；其它模组的来源写它的 id
+neiguess.gui.config.general.quota.extra=其它来源
+neiguess.gui.config.general.quota.extra.tooltip=其它模组来源的配额，格式 id=条数
+
+neiguess.gui.config.general.sources=来源开关
+neiguess.gui.config.general.sources.tooltip=开关各个候选来源
+neiguess.gui.config.general.sources.recent=最近
+neiguess.gui.config.general.sources.recent.tooltip=最近搜过的词
+neiguess.gui.config.general.sources.quest=任务
+neiguess.gui.config.general.sources.quest.tooltip=BetterQuesting 任务
+neiguess.gui.config.general.sources.questskiproots=跳过无前置任务
+neiguess.gui.config.general.sources.questskiproots.tooltip=没有前置的任务（多为章节入口/教程）不推荐
+neiguess.gui.config.general.sources.frequent=常搜
+neiguess.gui.config.general.sources.frequent.tooltip=搜索次数最多的词
+neiguess.gui.config.general.sources.random=推荐
+neiguess.gui.config.general.sources.random.tooltip=推荐词池
+neiguess.gui.config.general.sources.chat=聊天
+neiguess.gui.config.general.sources.chat.tooltip=记录玩家聊天里提到的物品
+
+neiguess.gui.config.general.chat=聊天链接
+neiguess.gui.config.general.chat.tooltip=聊天里的物品名可点击
+neiguess.gui.config.general.chat.links=启用
+neiguess.gui.config.general.chat.links.tooltip=给物品名 / 物品 id / 矿辞 / 模组名加下划线
+neiguess.gui.config.general.chat.linksonsystemmessages=处理系统消息
+neiguess.gui.config.general.chat.linksonsystemmessages.tooltip=公告、成就播报也处理
+neiguess.gui.config.general.chat.keepexistingclicks=保留已有点击事件
+neiguess.gui.config.general.chat.keepexistingclicks.tooltip=已经带点击事件的文字保持原样
+neiguess.gui.config.general.chat.modifierkeys=修饰键
+neiguess.gui.config.general.chat.modifierkeys.tooltip=Ctrl+点击 = 用途表，Alt+点击 = 复制 id
+neiguess.gui.config.general.chat.hoverpreview=悬停预览
+neiguess.gui.config.general.chat.hoverpreview.tooltip=鼠标悬停链接时显示物品提示
+neiguess.gui.config.general.chat.asciiwordboundary=英文整词匹配
+neiguess.gui.config.general.chat.asciiwordboundary.tooltip=Coal 不会匹配 Coalition 里的那一段
+
+neiguess.gui.config.general.words=词库
+neiguess.gui.config.general.words.tooltip=大词库请放到 config/neiguess/lexicon/*.json
+neiguess.gui.config.general.words.recommendwords=推荐词
+neiguess.gui.config.general.words.recommendwords.tooltip=modid、模组名、物品名或 NEI 查询都可以
+neiguess.gui.config.general.words.modaliases=模组别名
+neiguess.gui.config.general.words.modaliases.tooltip=别名=modid
+neiguess.gui.config.general.words.orealiases=矿辞别名
+neiguess.gui.config.general.words.orealiases.tooltip=别名=$矿辞名
+
+neiguess.gui.config.general.debug=调试设置
+neiguess.gui.config.general.debug.tooltip=开发与调试
+neiguess.gui.config.general.debug.enabledebugmode=调试模式
+neiguess.gui.config.general.debug.enabledebugmode.tooltip=启用调试日志输出
+
+neiguess.source.recent=最近
+neiguess.source.quest=任务
+neiguess.source.frequent=常搜
+neiguess.source.chat=聊天
+neiguess.source.random=推荐
+neiguess.source.mod=模组
+neiguess.source.ore=矿辞
+neiguess.source.favorite=收藏
+neiguess.source.pick=上次
+
+neiguess.page.mixed=混合
+neiguess.page.search=搜索
+neiguess.filter.all=全部
+neiguess.filter.item=物品
+neiguess.tooltip.query=实际搜索：%s
+
+neiguess.badge.pick=上次点开
+neiguess.badge.item=物品
+neiguess.badge.didYouMean=你是不是想搜
+neiguess.badge.direct=直接搜
+
+neiguess.help.1=左键 / 回车      搜索
+neiguess.help.2=右键             收藏（金色置顶）
+neiguess.help.3=Shift+右键       从历史里删掉
+neiguess.help.4=滚轮 / ← →       换页
+neiguess.help.5=PageUp/PageDown  换页
+neiguess.help.6=Tab              接受灰字补全
+neiguess.help.7=Ctrl+Tab         换页（输入时=切换筛选）
+neiguess.help.8=↑ / ↓            NEI 自带的搜索历史
+
+neiguess.chat.hint=点击：合成表  Ctrl：用途表  Alt：复制
+neiguess.chat.copied=已复制 %s
+neiguess.chat.unknownItem=找不到物品 %s
+neiguess.chat.noRecipe=NEI 里没有 %s 的配方
+
+neiguess.cmd.exported=已导出搜索历史：%s
+neiguess.cmd.exportFailed=导出失败：%s
+neiguess.cmd.banned=已屏蔽「%s」，它不会再出现在候选里
+neiguess.cmd.unbannedAll=已恢复 %s 个被屏蔽的词
+neiguess.cmd.unbanned=已恢复「%s」
+neiguess.cmd.notBanned=「%s」不在屏蔽列表里
+neiguess.cmd.favOn=已收藏「%s」
+neiguess.cmd.favOff=已取消收藏「%s」
+neiguess.cmd.stats=搜索记录 %s 条 · 收藏 %s 个 · 屏蔽 %s 个 · 任务记录 %s 条 · 物品名索引 %s 条
+neiguess.cmd.reloaded=已从 %s 重新载入词库
+neiguess.cmd.questNone=还没有任务浏览记录，先去任务书里点开一个任务
+neiguess.cmd.quest=最近查看的任务 %s 需要：%s
+neiguess.cmd.help.1=/neiguess show <modid:name[@meta]>  打开合成表
+neiguess.cmd.help.2=/neiguess quest   搜索最近查看任务所需物品
+neiguess.cmd.help.3=/neiguess fav <词>   收藏 / 取消收藏
+neiguess.cmd.help.4=/neiguess ban <词>   屏蔽
+neiguess.cmd.help.5=/neiguess unban <词|all>   恢复
+neiguess.cmd.help.6=/neiguess stats   统计
+neiguess.cmd.help.7=/neiguess export   导出搜索历史 CSV
+neiguess.cmd.help.8=/neiguess reload   重新载入词库

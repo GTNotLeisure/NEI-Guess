@@ -1,4 +1,4 @@
-package com.hfstudio.example.config;
+package com.hfstudio.neiguess.config;
 
 import java.util.Collections;
 import java.util.Set;
@@ -8,14 +8,14 @@ import net.minecraft.client.gui.GuiScreen;
 
 import cpw.mods.fml.client.IModGuiFactory;
 
-public class ExampleGuiFactory implements IModGuiFactory {
+public class NEIGuessGuiFactory implements IModGuiFactory {
 
     @Override
     public void initialize(Minecraft minecraftInstance) {}
 
     @Override
     public Class<? extends GuiScreen> mainConfigGuiClass() {
-        return ExampleGuiConfig.class;
+        return NEIGuessGuiConfig.class;
     }
 
     @Override
