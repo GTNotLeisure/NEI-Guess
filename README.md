@@ -4,9 +4,7 @@
 
 点击 NEI 搜索框，即可查看收藏、搜索历史、任务需求、常用搜索词等候选内容；点击任意条目即可直接搜索。也支持拼音搜索、搜索词补全、聊天物品链接和自定义推荐词库。
 
-这是 [JEI Guess](https://github.com/) 的 Minecraft 1.7.10 NEI 移植版，原作者 Maixr，遵循 MIT 许可协议，详见 `LICENSE-JEIGuess.txt`。
-
-> 本项目与 NEI、JEI 官方及其作者无隶属关系。
+> 本项目与 NEI 官方及其作者无隶属关系。
 
 ## 功能介绍
 
@@ -200,4 +198,4 @@ build/libs/neiguess-<版本>.jar
 
 NEI Guess 的许可协议见 `LICENSE.txt`。
 
-本项目移植自 JEI Guess，原项目由 Maixr 编写，遵循 MIT License。
+这是 [JEI Guess](https://github.com/Maixr/JEIGuess) 的 Minecraft 1.7.10 NEI 移植版，原作者 Maixr，遵循 MIT 许可协议。
