@@ -62,7 +62,40 @@ final class BetterQuestingBridge {
             loadedAt = now;
             pool = rebuild();
         }
-        return new ArrayList<>(pool.subList(0, Math.min(limit, pool.size())));
+        List<Suggestion> out = new ArrayList<>(pool.subList(0, Math.min(limit, pool.size())));
+        if (out.size() < limit) appendViewed(out, limit);
+        return out;
+    }
+
+    static List<Suggestion> viewedSuggestions(int limit) {
+        List<Suggestion> out = new ArrayList<>();
+        appendViewed(out, limit);
+        return out;
+    }
+
+    private static void appendViewed(List<Suggestion> out, int limit) {
+        Set<String> seen = new LinkedHashSet<>();
+        for (Suggestion suggestion : out) seen.add(suggestion.query());
+        int before = out.size();
+        for (SearchHistoryStore.QuestView view : SearchHistoryStore.get()
+            .questViews()) {
+            for (String item : view.items) {
+                if (out.size() >= limit) break;
+                if (item == null || item.isBlank()) continue;
+                String query = NeiBridge.escape(item);
+                if (!seen.add(query)) continue;
+                out.add(Suggestion.hoverBadge(item, query, Suggestion.Source.QUEST, badgeOf(view.title)));
+            }
+            if (out.size() >= limit) break;
+        }
+        if (NEIGuess.debug() && out.size() > before) {
+            NEIGuess.LOG.info("Quest history supplied {} suggestions", out.size() - before);
+        }
+    }
+
+    private static String badgeOf(String title) {
+        String clean = title == null ? "" : title;
+        return clean.length() > 16 ? clean.substring(0, 16) + "…" : clean;
     }
 
     private static List<Suggestion> rebuild() {
@@ -115,7 +148,7 @@ final class BetterQuestingBridge {
             List<QuestItem> list = items.get(id);
             if (list == null || !seenQuests.add(id.toString())) continue;
             String title = titleOf(id, quests.get(id));
-            String badge = title.length() > 16 ? title.substring(0, 16) + "…" : title;
+            String badge = badgeOf(title);
             for (QuestItem qi : list) {
                 if (seenItems.add(qi.query())) {
                     out.add(Suggestion.hoverBadge(qi.display(), qi.query(), Suggestion.Source.QUEST, badge));
