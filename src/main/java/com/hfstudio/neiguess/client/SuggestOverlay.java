@@ -249,11 +249,12 @@ public final class SuggestOverlay implements IContainerDrawHandler, IContainerIn
         w = Math.min(w, Math.max(120, gui.width - 8));
         int h = vis.size() * LINE_H + PAD * 2 + HEADER_H;
 
-        int[] box = NeiBridge.bounds();
-        if (box != null) {
-            px = Math.max(2, Math.min(box[0], gui.width - w - 2));
-            py = box[1] - h - 3;
-            if (py < 2) py = box[1] + box[3] + 3;
+        GuiTextField inputBox = NeiBridge.innerBox();
+        if (inputBox != null) {
+            int searchLeft = inputBox.xPosition;
+            px = Math.max(2, Math.min(searchLeft, gui.width - w - 2));
+            py = inputBox.yPosition - h - 3;
+            if (py < 2) py = inputBox.yPosition + inputBox.height + 3;
         } else {
             px = (gui.width - w) / 2;
             py = gui.height - h - 40;

@@ -113,11 +113,6 @@ public final class NeiBridge {
         }
     }
 
-    public static int[] bounds() {
-        SearchField f = field();
-        return f == null ? null : new int[] { f.x, f.y, f.w, f.h };
-    }
-
     public static boolean searchContains(int mx, int my) {
         SearchField f = field();
         return f != null && f.contains(mx, my);
