@@ -1,5 +1,6 @@
 package com.hfstudio.neiguess.client;
 
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,9 +28,11 @@ import codechicken.lib.gui.GuiDraw;
 import codechicken.nei.NEIClientConfig;
 import codechicken.nei.guihook.IContainerDrawHandler;
 import codechicken.nei.guihook.IContainerInputHandler;
+import codechicken.nei.guihook.IContainerObjectHandler;
 import codechicken.nei.guihook.IContainerTooltipHandler;
 
-public final class SuggestOverlay implements IContainerDrawHandler, IContainerInputHandler, IContainerTooltipHandler {
+public final class SuggestOverlay
+    implements IContainerDrawHandler, IContainerInputHandler, IContainerObjectHandler, IContainerTooltipHandler {
 
     public static final SuggestOverlay INSTANCE = new SuggestOverlay();
 
@@ -513,7 +516,36 @@ public final class SuggestOverlay implements IContainerDrawHandler, IContainerIn
 
     @Override
     public List<String> handleItemTooltip(GuiContainer gui, ItemStack stack, int mx, int my, List<String> currenttip) {
-        return visible && inside(mx, my) ? new ArrayList<>() : currenttip;
+        return shouldHideTooltipAt(mx, my) ? new ArrayList<>() : currenttip;
+    }
+
+    @Override
+    public void guiTick(GuiContainer gui) {}
+
+    @Override
+    public void refresh(GuiContainer gui) {}
+
+    @Override
+    public void load(GuiContainer gui) {}
+
+    @Override
+    public ItemStack getStackUnderMouse(GuiContainer gui, int mousex, int mousey) {
+        return null;
+    }
+
+    @Override
+    public boolean objectUnderMouse(GuiContainer gui, int mousex, int mousey) {
+        return shouldHideTooltipAt(mousex, mousey);
+    }
+
+    @Override
+    public boolean shouldShowTooltip(GuiContainer gui) {
+        Point mouse = GuiDraw.getMousePosition();
+        return !shouldHideTooltipAt(mouse.x, mouse.y);
+    }
+
+    boolean shouldHideTooltipAt(int mousex, int mousey) {
+        return visible && inside(mousex, mousey);
     }
 
     @Override
