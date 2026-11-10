@@ -516,7 +516,7 @@ public final class SuggestOverlay
 
     @Override
     public List<String> handleItemTooltip(GuiContainer gui, ItemStack stack, int mx, int my, List<String> currenttip) {
-        return visible && inside(mx, my) ? new ArrayList<>() : currenttip;
+        return shouldHideTooltipAt(mx, my) ? new ArrayList<>() : currenttip;
     }
 
     @Override
@@ -535,13 +535,17 @@ public final class SuggestOverlay
 
     @Override
     public boolean objectUnderMouse(GuiContainer gui, int mousex, int mousey) {
-        return visible && inside(mousex, mousey);
+        return shouldHideTooltipAt(mousex, mousey);
     }
 
     @Override
     public boolean shouldShowTooltip(GuiContainer gui) {
         Point mouse = GuiDraw.getMousePosition();
-        return !visible || !inside(mouse.x, mouse.y);
+        return !shouldHideTooltipAt(mouse.x, mouse.y);
+    }
+
+    boolean shouldHideTooltipAt(int mousex, int mousey) {
+        return visible && inside(mousex, mousey);
     }
 
     @Override
