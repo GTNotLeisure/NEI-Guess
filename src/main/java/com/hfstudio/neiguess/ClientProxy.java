@@ -41,6 +41,7 @@ public class ClientProxy extends CommonProxy {
     public void postInit(FMLPostInitializationEvent event) {
         GuiContainerManager.inputHandlers.addFirst(SuggestOverlay.INSTANCE);
         GuiContainerManager.addDrawHandler(SuggestOverlay.INSTANCE);
+        GuiContainerManager.addObjectHandler(SuggestOverlay.INSTANCE);
         GuiContainerManager.addTooltipHandler(SuggestOverlay.INSTANCE);
         ItemList.loadCallbacks.add(ItemIndexes::rebuild);
     }
