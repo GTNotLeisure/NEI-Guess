@@ -264,7 +264,7 @@ public final class ItemIndexes {
             .toLowerCase(Locale.ROOT);
         if (key.length() > MAX_NAME) return out;
         int[] matches = matches(idx, key, prefixOnly);
-        boolean pinyin = PinyinBridge.isAscii(key) && PinyinBridge.isReady();
+        boolean pinyin = PinyinBridge.isAscii(key);
         for (int pass = 0; pass < 2 && out.size() < limit; pass++) {
             for (int i : matches) {
                 if (out.size() >= limit) break;
@@ -277,7 +277,7 @@ public final class ItemIndexes {
     }
 
     private static int[] matches(NameIndex idx, String key, boolean prefixOnly) {
-        boolean pinyin = PinyinBridge.isAscii(key) && PinyinBridge.isReady();
+        boolean pinyin = PinyinBridge.isAscii(key);
         NarrowCache c = narrow;
         int[] candidates = null;
         if (c != null && c.index() == idx && c.prefixOnly() == prefixOnly) {

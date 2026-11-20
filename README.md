@@ -41,12 +41,12 @@ NEI Guess 会自动识别并转换常见搜索词：
 
 ### 拼音搜索
 
-安装 NotEnoughCharacters 后，可以使用拼音或首字母搜索：
+NEI Guess 内置 NeverEnoughCharacters-Rework（`nech`），可以使用拼音或首字母搜索。升级时请移除旧的 NeverEnoughCharacters-Rework JAR，原有的 `config/NeverEnoughCharacters.cfg` 和 `pinin/` 下的 Lua 脚本可以继续使用。
 
 - `yyny` → 应用能源2
 - 支持物品名称、模组名称和矿辞名称。
 - `@`、`$` 等搜索语法提示也支持拼音匹配。
-- 沿用 NotEnoughCharacters 的模糊音设置。
+- 沿用 NeverEnoughCharacters-Rework 的模糊音设置。
 
 ### 聊天物品链接
 
@@ -173,8 +173,8 @@ NEI Guess 在原版思路上做了一些针对 1.7.10 和 GTNH 环境的改进�
 | Minecraft | 1.7.10 |
 | 加载器 | Forge 10.13.4 |
 | NEI | NotEnoughItems（GTNH 2.8+） |
-| 必需依赖 | GTNHLib |
-| 可选依赖 | BetterQuesting、NotEnoughCharacters |
+| 必需依赖 | GTNHLib、UniMixins |
+| 可选依赖 | BetterQuesting |
 
 这是一个纯客户端模组，服务器无需安装。
 
