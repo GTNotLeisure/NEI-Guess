@@ -23,8 +23,8 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
     version = Tags.VERSION,
     name = MODNAME,
     guiFactory = "com.hfstudio.neiguess.config.NEIGuessGuiFactory",
-    dependencies = "required-after:NotEnoughItems;required-after:gtnhlib;after:betterquesting;"
-        + "after:chromatictooltips;after:chromatictooltipscompat;after:modularui2;after:nech",
+    dependencies = "required-after:NotEnoughItems;required-after:gtnhlib;required-after:nech;after:betterquesting;"
+        + "after:chromatictooltips;after:chromatictooltipscompat;after:modularui2",
     acceptableRemoteVersions = "*",
     acceptedMinecraftVersions = "[1.7.10]")
 public class NEIGuess {

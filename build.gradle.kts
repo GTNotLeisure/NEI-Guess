@@ -2,6 +2,10 @@ plugins {
     id("com.gtnewhorizons.gtnhconvention")
 }
 
+spotless {
+    lineEndings = com.diffplug.spotless.LineEnding.UNIX
+}
+
 minecraft {
     extraRunJvmArguments.addAll("-Xmx8G", "-Xms8G", "-Dgtnhlib.dumpkeys=true")
 }
@@ -28,6 +32,7 @@ val runConfigs = listOf(
 runConfigs.forEach { (taskName, path) ->
     tasks.named<JavaExec>(taskName) {
         workingDir = file("${projectDir}/$path")
+        systemProperty("fml.coreMods.load", "com.hfstudio.neiguess.core.NechCorePlugin")
         doFirst {
             workingDir.mkdirs()
         }

@@ -16,6 +16,16 @@
       "logoFile": "assets/neiguess/icon.png",
       "screenshots": [],
       "parent": ""
+    },
+    {
+      "modid": "nech",
+      "name": "NeverEnoughCharacters-Rework",
+      "description": "Pinyin search for NEI and other GTNH interfaces.",
+      "version": "${modVersion}",
+      "mcversion": "${minecraftVersion}",
+      "url": "https://github.com/asdflj/NeverEnoughCharacters-Rework",
+      "authorList": ["vfyjxf", "asdflj"],
+      "parent": "${modId}"
     }
   ]
 }
