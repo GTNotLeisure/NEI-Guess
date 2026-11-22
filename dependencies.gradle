@@ -21,6 +21,13 @@ dependencies {
 }
 
 configurations.configureEach {
+    resolutionStrategy.dependencySubstitution {
+        substitute(module("com.github.GTNewHorizons:GTNHExtLib"))
+            .using(module("com.github.GTNewHorizons:GTNHExtLib:1.0.6"))
+            .withClassifier("dev")
+            .because("Use one GTNHExtLib development artifact for direct and transitive dependencies")
+    }
+
     exclude group: "com.github.GTNewHorizons", module: "CodeChickenLib"
     exclude group: "com.github.GTNewHorizons", module: "Hodgepodge"
     exclude group: "com.github.GTNewHorizons", module: "Baubles"
