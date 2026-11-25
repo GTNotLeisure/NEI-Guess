@@ -7,7 +7,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import com.hfstudio.neiguess.client.overlay.ItemNameOverlayRenderer;
+import com.hfstudio.neiguess.client.overlay.ItemNameOverlay;
 
 @Mixin(targets = "codechicken.nei.ItemsGrid$ScreenCapture", remap = false)
 public abstract class ScreenCaptureMixin {
@@ -17,7 +17,7 @@ public abstract class ScreenCaptureMixin {
 
     @Inject(method = "needRefresh", at = @At("RETURN"), cancellable = true, require = 1)
     private void neiguess$invalidateNames(int mode, CallbackInfoReturnable<Boolean> cir) {
-        if (neiguess$nameRevision != ItemNameOverlayRenderer.INSTANCE.getCacheRevision()) {
+        if (neiguess$nameRevision != ItemNameOverlay.getCacheRevision()) {
             cir.setReturnValue(true);
         }
     }
@@ -27,6 +27,6 @@ public abstract class ScreenCaptureMixin {
         at = @At(value = "INVOKE", target = "Ljava/lang/Runnable;run()V", shift = At.Shift.AFTER),
         require = 1)
     private void neiguess$captureNames(Runnable callback, int mode, CallbackInfo ci) {
-        neiguess$nameRevision = ItemNameOverlayRenderer.INSTANCE.getCacheRevision();
+        neiguess$nameRevision = ItemNameOverlay.getCacheRevision();
     }
 }

@@ -20,10 +20,13 @@ public abstract class GuiContainerManagerMixin {
         ItemNameOverlay.refresh();
     }
 
-    // Run inside NEI's safe render context, after both the icon and its amount have been drawn.
-    @Inject(method = "lambda$drawItem$0", at = @At("RETURN"), require = 1)
-    private static void neiguess$drawName(boolean smallAmount, String quantity, ItemStack stack, FontRenderer font,
-        int x, int y, CallbackInfo ci) {
+    // Keep optional labels outside NEI's item failure tracking.
+    @Inject(
+        method = "drawItem(IILnet/minecraft/item/ItemStack;Lnet/minecraft/client/gui/FontRenderer;ZLjava/lang/String;)V",
+        at = @At("RETURN"),
+        require = 1)
+    private static void neiguess$drawName(int x, int y, ItemStack stack, FontRenderer font, boolean smallAmount,
+        String quantity, CallbackInfo ci) {
         ItemNameOverlay.render(smallAmount, quantity, stack, font, x, y);
     }
 }
