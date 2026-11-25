@@ -11,6 +11,8 @@ import com.hfstudio.neiguess.client.ItemIndexes;
 import com.hfstudio.neiguess.client.ModularUI2Compat;
 import com.hfstudio.neiguess.client.SearchHistoryStore;
 import com.hfstudio.neiguess.client.SuggestOverlay;
+import com.hfstudio.neiguess.client.overlay.ItemNameOverlay;
+import com.hfstudio.neiguess.client.overlay.ItemNameOverlayConfig;
 import com.hfstudio.neiguess.client.source.BuiltinSources;
 
 import codechicken.nei.ItemList;
@@ -44,6 +46,8 @@ public class ClientProxy extends CommonProxy {
 
     @Override
     public void postInit(FMLPostInitializationEvent event) {
+        ItemNameOverlayConfig.register();
+        ItemNameOverlay.registerResourceListener();
         GuiContainerManager.inputHandlers.addFirst(SuggestOverlay.INSTANCE);
         GuiContainerManager.addDrawHandler(SuggestOverlay.INSTANCE);
         GuiContainerManager.addObjectHandler(SuggestOverlay.INSTANCE);
