@@ -1,0 +1,8 @@
+{
+  "required": true,
+  "minVersion": "0.8.5-GTNH",
+  "package": "com.hfstudio.neiguess.mixins.early",
+  "refmap": "mixins.neiguess.refmap.json",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": []
+}
