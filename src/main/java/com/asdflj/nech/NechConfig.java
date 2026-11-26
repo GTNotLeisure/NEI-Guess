@@ -1,154 +1,136 @@
 package com.asdflj.nech;
 
-import java.io.File;
+import java.util.Objects;
 
-import net.minecraftforge.common.config.Configuration;
-
-import com.asdflj.nech.proxy.ClientProxy;
+import com.asdflj.nech.core.transform.SearchTargets;
 import com.asdflj.nech.utils.Match;
+import com.gtnewhorizon.gtnhlib.config.Config;
+import com.gtnewhorizon.gtnhlib.config.ConfigurationManager;
 
 import me.towdium.pinin.Keyboard;
 
+@Config(modid = NeverEnoughCharacters.MODID, filename = "NeverEnoughCharacters", category = "general")
+@Config.LangKeyPattern(pattern = "nech.config.%field")
+@Config.LangKey("nech.config.general")
+@Config.Comment("Client-side phonetic search and ASM integration")
 public class NechConfig {
 
+    @Config.DefaultBoolean(false)
+    @Config.Reloadable("runtime")
+    @Config.Comment("Log every class changed by the client search transformer.")
+    @Config.LangKey("nech.config.debug.verbose")
     public static boolean enableVerbose = false;
+
+    @Config.DefaultBoolean(true)
+    @Config.Reloadable("runtime")
+    @Config.Comment("Match Zh and Z interchangeably.")
+    @Config.LangKey("nech.config.fuzzy.zh_z")
     public static boolean EnableFZh2Z = true;
+
+    @Config.DefaultBoolean(true)
+    @Config.Reloadable("runtime")
+    @Config.Comment("Match Sh and S interchangeably.")
+    @Config.LangKey("nech.config.fuzzy.sh_s")
     public static boolean EnableFSh2S = true;
+
+    @Config.DefaultBoolean(true)
+    @Config.Reloadable("runtime")
+    @Config.Comment("Match Ch and C interchangeably.")
+    @Config.LangKey("nech.config.fuzzy.ch_c")
     public static boolean EnableFCh2C = true;
+
+    @Config.DefaultBoolean(true)
+    @Config.Reloadable("runtime")
+    @Config.Comment("Match Ang and An interchangeably.")
+    @Config.LangKey("nech.config.fuzzy.ang_an")
     public static boolean EnableFAng2An = true;
+
+    @Config.DefaultBoolean(true)
+    @Config.Reloadable("runtime")
+    @Config.Comment("Match Ing and In interchangeably.")
+    @Config.LangKey("nech.config.fuzzy.ing_in")
     public static boolean EnableFIng2In = true;
+
+    @Config.DefaultBoolean(true)
+    @Config.Reloadable("runtime")
+    @Config.Comment("Match Eng and En interchangeably.")
+    @Config.LangKey("nech.config.fuzzy.eng_en")
     public static boolean EnableFEng2En = true;
+
+    @Config.DefaultBoolean(true)
+    @Config.Reloadable("runtime")
+    @Config.Comment("Match U and V interchangeably.")
+    @Config.LangKey("nech.config.fuzzy.u_v")
     public static boolean EnableFU2V = true;
-    public static Spell KeyboardType;
-    public static String[] transformerRegExpAdditionalList;
-    public static String[] transformerStringAdditionalList;
-    public static String[] transformerMethodBlackList;
-    public static String[] defaultTransformerRegExp;
-    public static String[] defaultTransformerStringList;
 
-    public NechConfig() {}
+    @Config.DefaultEnum("QUANPIN")
+    @Config.Reloadable("runtime")
+    @Config.Comment("Keyboard layout used for phonetic input.")
+    @Config.LangKey("nech.config.keyboard.type")
+    public static Spell KeyboardType = Spell.QUANPIN;
 
-    public static void loadConfig(File configFile) {
-        Configuration config = new Configuration(configFile);
-        config.load();
-        config.get(
-            "transformers",
-            "DefaultTransformerRegExp",
-            defaultTransformerRegExp,
-            "Default list of methods to transform, of which uses regular expression to match.\nThis list is maintained by the mod and will have no effect if you change it.");
-        config.get(
-            "transformers",
-            "DefaultTransformerString",
-            defaultTransformerStringList,
-            "Default list of methods to transform, of which uses \"String.contains\" to match.\nThis list is maintained by the mod and will have no effect if you change it.");
-        config.getCategory("transformers")
-            .get("DefaultTransformerRegExp")
-            .set(defaultTransformerRegExp);
-        config.getCategory("transformers")
-            .get("DefaultTransformerString")
-            .set(defaultTransformerStringList);
-        transformerRegExpAdditionalList = config.get(
-            "transformers",
-            "AdditionalTransformerRegExpList",
-            new String[0],
-            "Additional list of methods to transform, of which uses regular expression to match.\nThe format is \"full.class.path$InnerClass:methodName\"")
-            .getStringList();
-        transformerStringAdditionalList = config.get(
-            "transformers",
-            "AdditionalTransformerStringList",
-            new String[0],
-            "Additional list of methods to transform, of which uses \"String.contains\" to match.\nThe format is \"full.class.path$InnerClass:methodName\"")
-            .getStringList();
-        transformerMethodBlackList = config
-            .get(
-                "transformers",
-                "transformerMethodBlackList",
-                new String[0],
-                "Blacklist of methods to transform\nThe format is \"full.class.path$InnerClass:methodName\"")
-            .getStringList();
-        EnableFU2V = config.get("fuzzy", "EnableFU2V", true, "Set to true to enable fuzzy U <=> V")
-            .getBoolean();
-        EnableFZh2Z = config.get("fuzzy", "EnableFZh2Z", true, "Set to true to enable fuzzy Zh <=> Z")
-            .getBoolean();
-        EnableFSh2S = config.get("fuzzy", "EnableFSh2S", true, "Set to true to enable fuzzy Sh <=> S")
-            .getBoolean();
-        EnableFCh2C = config.get("fuzzy", "EnableFCh2C", true, "Set to true to enable fuzzy Ch <=> C")
-            .getBoolean();
-        EnableFAng2An = config.get("fuzzy", "EnableFAng2An", true, "Set to true to enable fuzzy Ang <=> An")
-            .getBoolean();
-        EnableFIng2In = config.get("fuzzy", "EnableFIng2In", true, "Set to true to enable fuzzy Ing <=> In")
-            .getBoolean();
-        EnableFEng2En = config.get("fuzzy", "EnableFEng2En", true, "Set to true to enable fuzzy Eng <=> En")
-            .getBoolean();
-        String keyboardTypeString = config
-            .get(
-                "general",
-                "KeyboardType",
-                "quanpin",
-                "Set the type of the keyboard, acceptable options are: quanpin, daqian, xiaohe and ziranma.")
-            .getString();
+    @Config.Name("AdditionalTransformerRegExpList")
+    @Config.DefaultStringList({})
+    @Config.RequiresMcRestart
+    @Config.Comment("Additional regex predicates. Use class:method or class:method(JVM descriptor).")
+    @Config.LangKey("nech.config.transformers.additional.regex")
+    public static String[] transformerRegExpAdditionalList = new String[0];
 
-        try {
-            KeyboardType = NechConfig.Spell.valueOf(keyboardTypeString.toUpperCase());
-        } catch (IllegalArgumentException var4) {
-            ClientProxy.LOGGER.error("Invalid keyboard type: " + keyboardTypeString);
-            KeyboardType = NechConfig.Spell.QUANPIN;
-        }
+    @Config.Name("AdditionalTransformerStringList")
+    @Config.DefaultStringList({})
+    @Config.RequiresMcRestart
+    @Config.Comment("Additional text predicates. Use class:method or class:method(JVM descriptor).")
+    @Config.LangKey("nech.config.transformers.additional.string")
+    public static String[] transformerStringAdditionalList = new String[0];
 
-        if (config.hasChanged()) {
-            config.save();
-        }
+    @Config.DefaultStringList({})
+    @Config.RequiresMcRestart
+    @Config.Comment("Excluded ASM roots and lambda implementations. Use class:method or class:*.")
+    @Config.LangKey("nech.config.transformers.blacklist")
+    public static String[] transformerMethodBlackList = new String[0];
 
+    @Config.Ignore
+    public static String[] defaultTransformerRegExp = SearchTargets.regexMethods();
+
+    @Config.Ignore
+    public static String[] defaultTransformerStringList = SearchTargets.stringMethods();
+
+    @Config.Ignore
+    private static boolean registered;
+
+    private NechConfig() {}
+
+    public static synchronized void registerConfig() {
+        if (registered) return;
+        ConfigurationManager.registerConfig(NechConfig.class);
+        registered = true;
     }
 
-    public static void setKeyboard(Spell keyboard) {
-        KeyboardType = keyboard;
+    public static void reload() {
+        ConfigurationManager.reloadConfig(NechConfig.class, "runtime");
+        onConfigChanged();
+    }
+
+    public static void onConfigChanged() {
         Match.onConfigChange();
     }
 
-    static {
-        KeyboardType = NechConfig.Spell.QUANPIN;
-        transformerRegExpAdditionalList = new String[0];
-        transformerStringAdditionalList = new String[0];
-        transformerMethodBlackList = new String[0];
-        defaultTransformerRegExp = new String[] { "appeng.client.me.ItemRepo:updateView",
-            "net.p455w0rd.wirelesscraftingterminal.client.me.ItemRepo:updateView",
-            "com.glodblock.github.client.me.FluidRepo:updateView",
-            "com.glodblock.github.client.me.EssentiaRepo:updateView",
-            "com.glodblock.github.client.me.FluidRepo:addEntriesToView",
-            "com.sinthoras.visualprospecting.integration.model.layers.UndergroundFluidLayerManager:computeSearch",
-            "com.sinthoras.visualprospecting.database.veintypes.VeinTypeCaching:lambda$recalculateSearch$0" };
-        defaultTransformerStringList = new String[] { "extracells.gui.GuiFluidTerminal:updateFluids",
-            "extracells.gui.GuiFluidStorage:updateFluids",
-            "witchinggadgets.client.ThaumonomiconIndexSearcher:buildEntryList",
-            "net.glease.tc4tweak.modules.researchBrowser.ThaumonomiconIndexSearcher:buildEntryList",
-            "appeng.client.gui.implementations.GuiInterfaceTerminal:refreshList",
-            "appeng.client.gui.implementations.GuiInterfaceTerminal:itemStackMatchesSearchTerm",
-            "appeng.client.gui.implementations.GuiInterfaceTerminal:interfaceSectionMatchesSearchTerm",
-            "appeng.client.gui.implementations.GuiInterfaceTerminal$InterfaceTerminalList:update",
-            "appeng.client.gui.implementations.GuiCraftConfirm:updateSearchGoToList",
-            "appeng.client.gui.implementations.GuiCraftConfirm:updateFilteredList",
-            "appeng.client.gui.implementations.GuiCraftingCPU:updateSearchGoToList",
-            "appeng.container.implementations.CraftingCpuEntry:matchesSearch",
-            "com.glodblock.github.client.gui.GuiInterfaceTerminalWireless:refreshList",
-            "com.glodblock.github.client.gui.GuiInterfaceTerminalWireless:itemStackMatchesSearchTerm",
-            "com.glodblock.github.client.gui.GuiInterfaceWireless$InterfaceWirelessList:updateList",
-            "com.glodblock.github.client.gui.GuiInterfaceWireless:itemStackMatchesSearchTerm",
-            "com.glodblock.github.client.gui.GuiLevelTerminal$LevelTerminalList:update",
-            "com.glodblock.github.client.gui.GuiLevelTerminal:itemStackMatchesSearchTerm",
-            "com.glodblock.github.client.gui.GuiInterfaceWireless$InterfaceWirelessList:update",
-            "appeng.client.gui.widgets.GuiCraftingTree:updateSearchGoToList",
-            "vswe.stevesfactory.components.ComponentMenuLiquid:updateSearch",
-            "vswe.stevesfactory.components.ComponentMenuItem:updateSearch",
-            "betterquesting.api2.client.gui.panels.lists.CanvasQuestSearch:queryMatches",
-            "me.towdium.jecalculation.utils.Utilities$I18n:contains",
-            "logisticspipes.gui.orderer.GuiOrderer:isSearched", "logisticspipes.gui.orderer.GuiRequestTable:isSearched",
-            "mrtjp.projectred.transportation.GuiRequester$$anonfun$stringMatch$1$1:apply",
-            "gregtech.crossmod.navigator.PowerfailLayerManager:onSearch",
-            "binnie.core.machines.storage.WindowCompartment$9:updateSearch" };
+    public static void setKeyboard(Spell keyboard) {
+        KeyboardType = Objects.requireNonNull(keyboard, "keyboard");
+        save();
+        onConfigChanged();
     }
 
-    public static enum Spell {
+    public static void setVerbose(boolean enabled) {
+        enableVerbose = enabled;
+        save();
+    }
+
+    private static void save() {
+        if (registered) ConfigurationManager.save(NechConfig.class);
+    }
+
+    public enum Spell {
 
         QUANPIN(Keyboard.QUANPIN),
         DAQIAN(Keyboard.DAQIAN),
@@ -162,12 +144,12 @@ public class NechConfig {
 
         public final Keyboard keyboard;
 
-        private Spell(Keyboard keyboard) {
+        Spell(Keyboard keyboard) {
             this.keyboard = keyboard;
         }
 
         public Keyboard get() {
-            return this.keyboard;
+            return keyboard;
         }
     }
 }

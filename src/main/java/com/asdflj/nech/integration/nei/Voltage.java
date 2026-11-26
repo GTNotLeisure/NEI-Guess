@@ -1,5 +1,7 @@
 package com.asdflj.nech.integration.nei;
 
+import java.util.StringJoiner;
+
 public enum Voltage {
 
     ulv,
@@ -18,16 +20,15 @@ public enum Voltage {
     uxv,
     max;
 
-    public static String getPatternString() {
-        StringBuilder s = new StringBuilder("(");
-        for (int i = 0; i < Voltage.values().length; i++) {
-            s.append(Voltage.values()[i].name());
-            if (i < Voltage.values().length - 1) {
-                s.append("|");
-            }
-        }
-        s.append(")");
-        return s.toString();
+    private static final String PATTERN = buildPattern();
+
+    private static String buildPattern() {
+        StringJoiner pattern = new StringJoiner("|", "(", ")");
+        for (Voltage voltage : values()) pattern.add(voltage.name());
+        return pattern.toString();
     }
 
+    public static String getPatternString() {
+        return PATTERN;
+    }
 }

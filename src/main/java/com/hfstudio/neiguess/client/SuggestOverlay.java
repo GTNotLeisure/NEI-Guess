@@ -31,7 +31,7 @@ import codechicken.nei.guihook.IContainerInputHandler;
 import codechicken.nei.guihook.IContainerObjectHandler;
 import codechicken.nei.guihook.IContainerTooltipHandler;
 
-public final class SuggestOverlay
+public class SuggestOverlay
     implements IContainerDrawHandler, IContainerInputHandler, IContainerObjectHandler, IContainerTooltipHandler {
 
     public static final SuggestOverlay INSTANCE = new SuggestOverlay();
@@ -494,7 +494,7 @@ public final class SuggestOverlay
         try {
             if (key != NEIClientConfig.getKeyBinding("gui.recipe") && key != NEIClientConfig.getKeyBinding("gui.usage"))
                 return;
-            java.awt.Point p = GuiDraw.getMousePosition();
+            Point p = GuiDraw.getMousePosition();
             recordPick(p.x, p.y);
         } catch (Throwable ignored) {}
     }

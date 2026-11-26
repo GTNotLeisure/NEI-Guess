@@ -2,36 +2,37 @@ package com.asdflj.nech.integration.nei;
 
 import static com.asdflj.nech.integration.nei.ButtonConstants.LUA_SCRIPTS;
 
-import codechicken.lib.config.ConfigTagParent;
-import codechicken.nei.NEIClientConfig;
+import java.util.Objects;
+
+import net.minecraft.client.resources.I18n;
 
 public class LuaToggleButton extends BaseToggleButton {
 
-    private static final ConfigTagParent tag = NEIClientConfig.global.config;
-    private final String n;
+    private final String displayName;
+    private final Runnable stateChanged;
 
     public LuaToggleButton(String name) {
-        this(name, true);
+        this(name, () -> {});
     }
 
-    private LuaToggleButton(String name, boolean defaultValue) {
+    public LuaToggleButton(String name, Runnable stateChanged) {
         super(LUA_SCRIPTS + "." + name, true);
-        tag.getTag(name)
-            .getBooleanValue(defaultValue);
-        this.n = name;
+        this.displayName = name;
+        this.stateChanged = Objects.requireNonNull(stateChanged, "stateChanged");
     }
 
     @Override
-    public boolean onClick(int button) {
-        return super.onClick(button);
+    protected void onStateChanged() {
+        stateChanged.run();
     }
 
     @Override
     public String getButtonText() {
-        return state() ? "启用" : "关闭";
+        return I18n.format(state() ? "nech.state.enabled" : "nech.state.disabled");
     }
 
-    public String translateN(String s, Object... args) {
-        return this.n;
+    @Override
+    public String translateN(String key, Object... args) {
+        return key.equals(tooltip) ? I18n.format("nei.options.nech.lua_scripts.tip") : displayName;
     }
 }

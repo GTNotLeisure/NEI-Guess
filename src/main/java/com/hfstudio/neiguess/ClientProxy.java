@@ -13,6 +13,7 @@ import com.hfstudio.neiguess.client.SearchHistoryStore;
 import com.hfstudio.neiguess.client.SuggestOverlay;
 import com.hfstudio.neiguess.client.overlay.ItemNameOverlay;
 import com.hfstudio.neiguess.client.overlay.ItemNameOverlayConfig;
+import com.hfstudio.neiguess.client.search.ClientSearchAliases;
 import com.hfstudio.neiguess.client.source.BuiltinSources;
 
 import codechicken.nei.ItemList;
@@ -34,6 +35,7 @@ public class ClientProxy extends CommonProxy {
 
     @Override
     public void init(FMLInitializationEvent event) {
+        ClientSearchAliases.INSTANCE.initialize();
         BuiltinSources.registerAll();
         MinecraftForge.EVENT_BUS.register(ClientEvents.INSTANCE);
         FMLCommonHandler.instance()

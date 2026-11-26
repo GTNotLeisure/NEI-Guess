@@ -5,7 +5,7 @@ import com.cleanroommc.modularui.screen.RichTooltipEvent;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
-public final class ModularUI2Compat {
+public class ModularUI2Compat {
 
     public static final ModularUI2Compat INSTANCE = new ModularUI2Compat();
 

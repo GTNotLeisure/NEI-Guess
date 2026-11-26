@@ -2,24 +2,18 @@ package com.hfstudio.neiguess.client;
 
 import java.util.Locale;
 
-import com.asdflj.nech.API;
+import com.asdflj.nech.utils.Match;
 
-public final class PinyinBridge {
+public class PinyinBridge {
 
     private PinyinBridge() {}
 
     public static boolean begins(String text, String query) {
-        return text != null && query != null
-            && !query.isEmpty()
-            && API.INSTANCE.getPinIn()
-                .begins(text, query);
+        return text != null && query != null && !query.isEmpty() && Match.beginsRaw(text, query);
     }
 
     public static boolean contains(String text, String query) {
-        return text != null && query != null
-            && !query.isEmpty()
-            && API.INSTANCE.getPinIn()
-                .contains(text, query);
+        return text != null && query != null && !query.isEmpty() && Match.containsRaw(text, query);
     }
 
     public static boolean matches(String text, String query, boolean prefixOnly) {

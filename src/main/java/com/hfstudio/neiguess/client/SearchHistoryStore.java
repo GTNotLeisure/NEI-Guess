@@ -26,7 +26,7 @@ import com.hfstudio.neiguess.config.ModConfig;
 
 import cpw.mods.fml.common.Loader;
 
-public final class SearchHistoryStore {
+public class SearchHistoryStore {
 
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting()
         .create();
@@ -51,7 +51,7 @@ public final class SearchHistoryStore {
         return INSTANCE;
     }
 
-    public static final class Entry {
+    public static class Entry {
 
         public String word;
         public int count;
@@ -65,7 +65,7 @@ public final class SearchHistoryStore {
         }
     }
 
-    public static final class QuestView {
+    public static class QuestView {
 
         public String id = "";
         public String title = "";
@@ -82,7 +82,7 @@ public final class SearchHistoryStore {
         }
     }
 
-    private static final class Data {
+    private static class Data {
 
         int version = 1;
         Map<String, Entry> entries = new LinkedHashMap<>();

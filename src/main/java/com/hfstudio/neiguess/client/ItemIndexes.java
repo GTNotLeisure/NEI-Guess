@@ -23,7 +23,7 @@ import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.ModContainer;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-public final class ItemIndexes {
+public class ItemIndexes {
 
     private static final int MIN_NAME = 2;
     private static final int MAX_NAME = 32;

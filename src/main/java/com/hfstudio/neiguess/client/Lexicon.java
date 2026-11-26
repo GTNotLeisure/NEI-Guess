@@ -32,7 +32,7 @@ import com.hfstudio.neiguess.config.ModConfig;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.ModContainer;
 
-public final class Lexicon {
+public class Lexicon {
 
     public record Alias(String display, String target) {}
 
@@ -48,11 +48,17 @@ public final class Lexicon {
     private static String[] oreNames;
     private static int builtRevision = -1;
     private static int builtGeneration = -1;
+    private static volatile long revision;
 
     private Lexicon() {}
 
     public static void invalidate() {
         mods = null;
+        revision++;
+    }
+
+    public static long revision() {
+        return revision;
     }
 
     private static void ensure() {

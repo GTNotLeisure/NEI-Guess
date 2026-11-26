@@ -21,7 +21,7 @@ import com.hfstudio.neiguess.NEIGuess;
 import com.hfstudio.neiguess.client.quest.QuestTracker;
 import com.hfstudio.neiguess.config.ModConfig;
 
-public final class GuessCommand extends CommandBase {
+public class GuessCommand extends CommandBase {
 
     public static final String NAME = "neiguess";
     private static final String LINK = "link";

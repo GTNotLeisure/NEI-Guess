@@ -35,7 +35,7 @@ import betterquesting.api2.storage.DBEntry;
 import betterquesting.api2.utils.QuestTranslation;
 import betterquesting.client.gui2.GuiQuest;
 
-final class BetterQuestingBridge {
+public class BetterQuestingBridge {
 
     private static final long CACHE_MS = 15_000L;
     private static final int MAX_QUESTS = 300;

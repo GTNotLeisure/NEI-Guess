@@ -1,16 +1,20 @@
 package com.asdflj.nech;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.Locale;
 
-import net.minecraft.client.resources.I18n;
+import net.minecraft.client.Minecraft;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
-import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatComponentTranslation;
 
+import com.asdflj.nech.NechConfig.Spell;
 import com.asdflj.nech.proxy.ClientProxy;
 import com.asdflj.nech.utils.LuaPlugin;
 import com.asdflj.nech.utils.Profiler;
@@ -25,123 +29,80 @@ public class NechCommand extends CommandBase {
 
     @Override
     public String getCommandUsage(ICommandSender sender) {
-        return "";
+        return "/nech <reload|profile|verbose|keyboard>";
     }
 
     @Override
     public void processCommand(ICommandSender sender, String[] args) {
         if (args.length == 1 && "reload".equals(args[0])) {
-            ClientProxy.sendToPlayer("nech.message.lua_script.reload");
+            ClientProxy.sendToPlayer("nech.message.reload.started");
+            NechConfig.reload();
             LuaPlugin.reloadLuaScript();
-            ClientProxy.sendToPlayer("nech.message.lua_script.done");
+            ClientProxy.sendToPlayer("nech.message.reload.completed");
         } else if (args.length == 1 && "profile".equals(args[0])) {
-            Thread t = new Thread(() -> {
-                sender.addChatMessage(new ChatComponentText(I18n.format("chat.start")));
-                Profiler.Report r = Profiler.run();
-
-                try {
-                    FileOutputStream fos = new FileOutputStream("logs/necharacters-profiler.txt");
-                    Throwable var3 = null;
-
-                    try {
-                        OutputStreamWriter osw = new OutputStreamWriter(fos);
-                        osw.write(
-                            (new GsonBuilder()).setPrettyPrinting()
-                                .create()
-                                .toJson(r));
-                        osw.flush();
-                        sender.addChatMessage(new ChatComponentText(I18n.format("chat.saved")));
-                    } catch (Throwable var13) {
-                        var3 = var13;
-                        throw var13;
-                    } finally {
-                        if (fos != null) {
-                            if (var3 != null) {
-                                try {
-                                    fos.close();
-                                } catch (Throwable var12) {
-                                    var3.addSuppressed(var12);
-                                }
-                            } else {
-                                fos.close();
-                            }
-                        }
-
-                    }
-                } catch (IOException var15) {
-                    sender.addChatMessage(new ChatComponentText(I18n.format("chat.save_error", new Object[0])));
-                }
-
-            });
-            t.setPriority(1);
-            t.start();
+            startProfiler(sender);
         } else if (args.length == 2 && "verbose".equals(args[0])) {
-            switch (args[1].toLowerCase()) {
-                case "true":
-                    NechConfig.enableVerbose = true;
-                    break;
-                case "false":
-                    NechConfig.enableVerbose = false;
-                    break;
-                default:
-                    sender.addChatMessage(new ChatComponentTranslation("command.unknown", new Object[0]));
-            }
+            if ("true".equalsIgnoreCase(args[1]) || "false".equalsIgnoreCase(args[1])) {
+                NechConfig.setVerbose(Boolean.parseBoolean(args[1]));
+            } else unknownCommand(sender);
         } else if (args.length == 2 && "keyboard".equals(args[0])) {
-            switch (args[1].toLowerCase()) {
-                case "quanpin":
-                    NechConfig.setKeyboard(NechConfig.Spell.QUANPIN);
-                    break;
-                case "daqian":
-                    NechConfig.setKeyboard(NechConfig.Spell.DAQIAN);
-                    break;
-                case "xiaohe":
-                    NechConfig.setKeyboard(NechConfig.Spell.XIAOHE);
-                    break;
-                case "ziranma":
-                    NechConfig.setKeyboard(NechConfig.Spell.ZIRANMA);
-                    break;
-                case "sougou":
-                    NechConfig.setKeyboard(NechConfig.Spell.SOUGOU);
-                    break;
-                case "guobiao":
-                    NechConfig.setKeyboard(NechConfig.Spell.GUOBIAO);
-                    break;
-                case "microsoft":
-                    NechConfig.setKeyboard(NechConfig.Spell.MICROSOFT);
-                    break;
-                case "pinyinjiajia":
-                    NechConfig.setKeyboard(NechConfig.Spell.PINYINPP);
-                    break;
-                case "ziguang":
-                    NechConfig.setKeyboard(NechConfig.Spell.ZIGUANG);
-                    break;
-                default:
-                    sender.addChatMessage(new ChatComponentTranslation("command.unknown"));
+            String name = args[1].equalsIgnoreCase("pinyinjiajia") ? "PINYINPP" : args[1].toUpperCase(Locale.ROOT);
+            try {
+                NechConfig.setKeyboard(Spell.valueOf(name));
+            } catch (IllegalArgumentException failure) {
+                unknownCommand(sender);
             }
-        } else {
-            sender.addChatMessage(new ChatComponentTranslation("command.unknown"));
-        }
+        } else unknownCommand(sender);
+    }
+
+    private static void startProfiler(ICommandSender sender) {
+        Thread thread = new Thread(() -> {
+            sendMessage(sender, "nech.message.profile.started");
+            Path file = Paths.get("logs", "necharacters-profiler.txt");
+            try {
+                Profiler.Report report = Profiler.run();
+                Files.createDirectories(file.getParent());
+                try (Writer writer = Files.newBufferedWriter(file, StandardCharsets.UTF_8)) {
+                    new GsonBuilder().setPrettyPrinting()
+                        .create()
+                        .toJson(report, writer);
+                }
+                sendMessage(sender, "nech.message.profile.saved");
+            } catch (IOException | RuntimeException failure) {
+                ClientProxy.LOGGER.error("Unable to write the NECH search profiler report to {}", file, failure);
+                sendMessage(sender, "nech.message.profile.failed");
+            }
+        }, "NECH Search Profiler");
+        thread.setPriority(Thread.MIN_PRIORITY);
+        thread.start();
+    }
+
+    private static void sendMessage(ICommandSender sender, String key) {
+        Minecraft.getMinecraft()
+            .func_152344_a(() -> sender.addChatMessage(new ChatComponentTranslation(key)));
+    }
+
+    private static void unknownCommand(ICommandSender sender) {
+        sender.addChatMessage(new ChatComponentTranslation("command.unknown"));
     }
 
     @Override
     public List<String> addTabCompletionOptions(ICommandSender sender, String[] args) {
-        if (args.length == 1) {
-            return getListOfStringsMatchingLastWord(args, "profile", "verbose", "keyboard", "reload");
-        } else if (args.length == 2 && "verbose".equals(args[0])) {
+        if (args.length == 1) return getListOfStringsMatchingLastWord(args, "profile", "verbose", "keyboard", "reload");
+        if (args.length == 2 && "verbose".equals(args[0]))
             return getListOfStringsMatchingLastWord(args, "true", "false");
-        } else {
-            return args.length == 2 && "keyboard".equals(args[0]) ? getListOfStringsMatchingLastWord(
-                args,
-                "quanpin",
-                "daqian",
-                "xiaohe",
-                "ziranma",
-                "sougou",
-                "guobiao",
-                "microsoft",
-                "pinyinjiajia",
-                "ziguang") : null;
-        }
+        if (args.length == 2 && "keyboard".equals(args[0])) return getListOfStringsMatchingLastWord(
+            args,
+            "quanpin",
+            "daqian",
+            "xiaohe",
+            "ziranma",
+            "sougou",
+            "guobiao",
+            "microsoft",
+            "pinyinjiajia",
+            "ziguang");
+        return null;
     }
 
     @Override

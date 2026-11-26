@@ -17,7 +17,7 @@ import com.hfstudio.neiguess.client.SearchHistoryStore;
 import com.hfstudio.neiguess.client.quest.QuestTracker;
 import com.hfstudio.neiguess.config.ModConfig;
 
-public final class BuiltinSources {
+public class BuiltinSources {
 
     public static final String RECENT = "recent";
     public static final String QUEST = "quest";
@@ -85,7 +85,7 @@ public final class BuiltinSources {
         }
     }
 
-    private static final class Recent extends Builtin {
+    private static class Recent extends Builtin {
 
         Recent() {
             super(RECENT, Source.RECENT);
@@ -116,7 +116,7 @@ public final class BuiltinSources {
         }
     }
 
-    private static final class Quest extends Builtin {
+    private static class Quest extends Builtin {
 
         Quest() {
             super(QUEST, Source.QUEST);
@@ -143,7 +143,7 @@ public final class BuiltinSources {
         }
     }
 
-    private static final class Frequent extends Builtin {
+    private static class Frequent extends Builtin {
 
         Frequent() {
             super(FREQUENT, Source.FREQUENT);
@@ -163,7 +163,7 @@ public final class BuiltinSources {
         }
     }
 
-    private static final class Chat extends Builtin {
+    private static class Chat extends Builtin {
 
         Chat() {
             super(CHAT, Source.CHAT);
@@ -183,7 +183,7 @@ public final class BuiltinSources {
         }
     }
 
-    private static final class Recommend extends Builtin {
+    private static class Recommend extends Builtin {
 
         private final Random random = new Random();
         private List<String> shuffled = new ArrayList<>();

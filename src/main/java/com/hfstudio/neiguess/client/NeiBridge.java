@@ -26,7 +26,7 @@ import codechicken.nei.recipe.GuiCraftingRecipe;
 import codechicken.nei.recipe.GuiUsageRecipe;
 import codechicken.nei.util.TextHistory;
 
-public final class NeiBridge {
+public class NeiBridge {
 
     public static final char MOD_PREFIX = '@';
     public static final char ORE_PREFIX = '$';

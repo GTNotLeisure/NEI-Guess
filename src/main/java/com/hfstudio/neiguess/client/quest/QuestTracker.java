@@ -8,7 +8,7 @@ import com.hfstudio.neiguess.api.Suggestion;
 
 import cpw.mods.fml.common.Loader;
 
-public final class QuestTracker {
+public class QuestTracker {
 
     private static final boolean LOADED = Loader.isModLoaded("betterquesting");
     private static boolean dynamicFailed = false;

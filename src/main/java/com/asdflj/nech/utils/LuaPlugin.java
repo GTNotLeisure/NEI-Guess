@@ -1,167 +1,155 @@
 package com.asdflj.nech.utils;
 
-import static codechicken.nei.NEIClientConfig.getOptionList;
-
 import java.io.File;
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import org.luaj.vm2.Globals;
-import org.luaj.vm2.LuaNil;
-import org.luaj.vm2.LuaTable;
-import org.luaj.vm2.LuaValue;
-import org.luaj.vm2.lib.jse.JsePlatform;
+import java.util.stream.Stream;
 
 import com.asdflj.nech.integration.nei.LuaToggleButton;
 import com.asdflj.nech.proxy.ClientProxy;
+import com.asdflj.nech.utils.lua.LuaScript;
 
-import codechicken.nei.NEIClientConfig;
 import codechicken.nei.api.API;
+import codechicken.nei.config.Option;
 import codechicken.nei.config.OptionList;
 import cpw.mods.fml.relauncher.FMLInjectionData;
 
 public class LuaPlugin {
 
-    static Globals globals = JsePlatform.standardGlobals();
-    public static List<LuaObject> list = new ArrayList<>();
-    public static List<LuaToggleButton> btns = new ArrayList<>();
+    public static volatile List<LuaObject> list = List.of();
 
     public static List<LuaObject> readLuaFiles(String directoryPath) {
+        Path directory = Paths.get(directoryPath);
+        List<Path> scripts;
+        try {
+            Files.createDirectories(directory);
+            try (Stream<Path> files = Files.list(directory)) {
+                scripts = files.filter(Files::isRegularFile)
+                    .filter(
+                        path -> path.getFileName()
+                            .toString()
+                            .endsWith(".lua"))
+                    .sorted()
+                    .toList();
+            }
+        } catch (IOException failure) {
+            throw new UncheckedIOException("Unable to enumerate Lua scripts in " + directory, failure);
+        }
         List<LuaObject> result = new ArrayList<>();
-        File directory = new File(directoryPath);
-        // 检查目录是否存在
-        if (!directory.exists() || !directory.isDirectory()) {
-            directory.mkdir();
-        }
-
-        // 获取目录下所有.lua文件
-        File[] luaFiles = directory.listFiles((dir, name) -> name.endsWith(".lua"));
-
-        if (luaFiles == null) {
-            return null;
-        }
-
-        // 遍历并读取每个.lua文件的内容
-        for (File luaFile : luaFiles) {
-            ClientProxy.LOGGER.info("读取文件: {}", luaFile.getName());
-            Path path = Paths.get(luaFile.getAbsolutePath());
+        Set<String> names = new HashSet<>();
+        for (Path path : scripts) {
+            ClientProxy.LOGGER.info("Loading Lua script: {}", path.getFileName());
             try {
-                result.add(new LuaObject(path));
-            } catch (Exception ignored) {
-                ClientProxy.LOGGER.info("无效文件: {}", luaFile.getName());
-                ClientProxy.sendToPlayer("nech.message.lua_script.invalid_file", luaFile.getName());
+                LuaObject script = new LuaObject(path);
+                String name = script.getName();
+                if (name != null && !name.isEmpty() && !names.add(name)) {
+                    throw new IllegalArgumentException("Duplicate Lua option name: " + name);
+                }
+                result.add(script);
+            } catch (RuntimeException failure) {
+                ClientProxy.LOGGER.warn("Invalid Lua script: {}", path.getFileName(), failure);
+                ClientProxy.sendToPlayer(
+                    "nech.message.lua.invalid",
+                    path.getFileName()
+                        .toString());
             }
         }
-        return result;
+        return List.copyOf(result);
     }
 
-    public static void loadLuaScript() {
-        for (LuaObject luaObject : list) {
-            if (luaObject.getBtn() != null) {
-                OptionList optionList = getOptionList("lua_scripts", NEIClientConfig.getOptionList());
-                if (optionList != null) {
-                    optionList.optionList.remove(luaObject.getBtn());
-                }
+    public static synchronized void loadLuaScript() {
+        List<LuaObject> loaded;
+        try {
+            loaded = readLuaFiles(new File((File) FMLInjectionData.data()[6], "pinin").getPath());
+        } catch (UncheckedIOException failure) {
+            ClientProxy.LOGGER.warn("Keeping the previous Lua scripts after a directory read failure", failure);
+            return;
+        }
+        for (LuaObject script : list) {
+            LuaToggleButton button = script.getBtn();
+            if (button != null && button.parent != null) {
+                button.parent.optionList.remove(button);
+                button.parent.options.values()
+                    .removeIf(option -> option == button);
             }
         }
-        list.clear();
-        List<LuaObject> r = readLuaFiles(new File((File) FMLInjectionData.data()[6], "pinin").getPath());
-        if (r != null) {
-            list.addAll(r);
-        }
+        for (LuaObject script : loaded) script.registerButton();
+        list = loaded;
+        Match.refreshInput();
     }
 
     public static OptionList getOptionList(String name, OptionList optionList) {
-        if (optionList == null) {
-            return null;
-        }
-        for (var o : optionList.optionList) {
-            if (o instanceof OptionList l) {
-                if (l.name.equals(name)) {
-                    return l;
-                } else {
-                    OptionList result = getOptionList(name, l);
-                    if (result != null) {
-                        return result;
-                    }
-                }
+        if (optionList == null) return null;
+        if (name.equals(optionList.name)) return optionList;
+        for (Option option : optionList.optionList) {
+            if (option instanceof OptionList child) {
+                OptionList result = getOptionList(name, child);
+                if (result != null) return result;
             }
         }
         return null;
     }
 
+    public static boolean reloadStates() {
+        boolean changed = false;
+        for (LuaObject script : list) changed |= script.reloadState();
+        return changed;
+    }
+
     public static void reloadLuaScript() {
         loadLuaScript();
-        Match.refresh();
     }
 
     public static class LuaObject {
 
-        private final LuaValue text_handler;
-        private final LuaValue input_handler;
-        private final LuaValue name;
-        private LuaToggleButton btn;
+        private final LuaScript script;
+        private LuaToggleButton button;
+        private volatile boolean enabled = true;
 
         public LuaObject(Path path) {
-            globals.loadfile(path.toString())
-                .call();
-            this.text_handler = globals.get("text_handler");
-            this.input_handler = globals.get("input_handler");
-            this.name = globals.get("name");
-            String name = this.getName();
-            if (name == null || name.isEmpty()) {
-                return;
-            }
-            btn = new LuaToggleButton(name);
-            API.addOption(btn);
+            script = new LuaScript(path);
+        }
+
+        private void registerButton() {
+            String name = getName();
+            if (name == null || name.isEmpty()) return;
+            button = new LuaToggleButton(name, this::reloadState);
+            API.addOption(button);
+            reloadState();
+        }
+
+        private boolean reloadState() {
+            boolean current = button == null || button.state();
+            boolean changed = enabled != current;
+            enabled = current;
+            return changed;
         }
 
         public LuaToggleButton getBtn() {
-            return btn;
+            return button;
         }
 
         public boolean getState() {
-            if (btn == null) return true;
-            return btn.state();
+            return enabled;
         }
 
-        public String textHandler(String t) {
-            if (this.text_handler instanceof LuaNil) {
-                return t;
-            }
-            return this.text_handler.call(LuaValue.valueOf(t))
-                .checkjstring();
+        public String textHandler(String text) {
+            return script.text(text);
         }
 
         public String getName() {
-            if (this.name instanceof LuaNil) {
-                return null;
-            }
-            return this.name.call()
-                .checkjstring();
+            return script.name();
         }
 
-        public Set<String> inputHandler(String s) {
-            if (s.isEmpty() || this.input_handler instanceof LuaNil) return null;
-            try {
-                LuaTable table = this.input_handler.call(LuaValue.valueOf(s))
-                    .checktable();
-                Set<String> result = new HashSet<>();
-                for (LuaValue key : table.keys()) {
-                    LuaValue value = table.get(key);
-                    if (!value.isnil()) {
-                        result.add(value.checkjstring());
-                    }
-                }
-                return result;
-            } catch (Exception ignored) {
-                return null;
-            }
+        public Set<String> inputHandler(String input) {
+            return script.input(input);
         }
     }
-
 }

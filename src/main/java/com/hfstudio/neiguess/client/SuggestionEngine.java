@@ -23,7 +23,7 @@ import codechicken.nei.SearchField;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.ModContainer;
 
-public final class SuggestionEngine {
+public class SuggestionEngine {
 
     private static final int FULL_PAGE_LIMIT = 60;
     private static final int MAX_PAGES_PER_SOURCE = 6;

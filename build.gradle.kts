@@ -1,9 +1,11 @@
+import com.diffplug.spotless.LineEnding
+
 plugins {
     id("com.gtnewhorizons.gtnhconvention")
 }
 
 spotless {
-    lineEndings = com.diffplug.spotless.LineEnding.UNIX
+    lineEndings = LineEnding.UNIX
 }
 
 minecraft {
@@ -32,7 +34,7 @@ val runConfigs = listOf(
 runConfigs.forEach { (taskName, path) ->
     tasks.named<JavaExec>(taskName) {
         workingDir = file("${projectDir}/$path")
-        systemProperty("fml.coreMods.load", "com.hfstudio.neiguess.core.NechCorePlugin")
+        systemProperty("fml.coreMods.load", "com.hfstudio.neiguess.core.NEIGuessCoreMod")
         doFirst {
             workingDir.mkdirs()
         }

@@ -4,11 +4,12 @@ import static com.asdflj.nech.integration.nei.NEIConfig.getConfigValue;
 import static com.asdflj.nech.utils.Match.inputMiddleware;
 import static com.asdflj.nech.utils.Match.textMiddleware;
 
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.asdflj.nech.integration.nei.ButtonConstants;
 import com.asdflj.nech.integration.nei.Voltage;
@@ -16,34 +17,38 @@ import com.asdflj.nech.integration.nei.Voltage;
 public class PinInPlugin implements Runnable {
 
     public static final String voltagePatternString = Voltage.getPatternString();
+    private static final Pattern VOLTAGE_PREFIX = Pattern.compile("^" + voltagePatternString + "\\w+");
+    private static final AtomicBoolean INSTALLED = new AtomicBoolean();
 
     @Override
     public void run() {
+        if (!INSTALLED.compareAndSet(false, true)) return;
         LuaPlugin.loadLuaScript();
-        textMiddleware.add(s -> {
+        textMiddleware.add(text -> {
             if (getConfigValue(ButtonConstants.COMMA)) {
-                return s.replaceAll(",", "");
+                return text.replace(",", "");
             }
-            return s;
+            return text;
         });
-        textMiddleware.add(s -> {
+        textMiddleware.add(text -> {
             if (getConfigValue(ButtonConstants.PARENTHESES)) {
-                return s.replaceAll("[()]", "");
+                return text.replace("(", "")
+                    .replace(")", "");
             }
-            return s;
+            return text;
         });
         textMiddleware.add(new ITextFunction<>() {
 
             @Override
-            public String apply(String s) {
-                if (getConfigValue(ButtonConstants.LUA_SCRIPT) && !LuaPlugin.list.isEmpty()) {
-                    for (LuaPlugin.LuaObject o : LuaPlugin.list) {
-                        if (o.getState()) {
-                            s = o.textHandler(s);
+            public String apply(String text) {
+                if (getConfigValue(ButtonConstants.LUA_SCRIPT)) {
+                    for (LuaPlugin.LuaObject script : LuaPlugin.list) {
+                        if (script.getState()) {
+                            text = script.textHandler(text);
                         }
                     }
                 }
-                return s;
+                return text;
             }
 
             @Override
@@ -52,33 +57,28 @@ public class PinInPlugin implements Runnable {
             }
         });
 
-        inputMiddleware.add(s -> {
-            if (getConfigValue(ButtonConstants.VOLTAGE) && s.matches("^" + voltagePatternString + "\\w+")) {
-                s = s.replaceFirst(voltagePatternString, "$1 ");
-                Set<String> result = Arrays.stream(s.split(" "))
-                    .collect(Collectors.toSet());
-                if (result.size() > 1) {
-                    return result;
-                }
-            }
+        inputMiddleware.add(input -> {
+            if (!getConfigValue(ButtonConstants.VOLTAGE)) return null;
+            Matcher prefix = VOLTAGE_PREFIX.matcher(input);
+            if (!prefix.matches()) return null;
+            String voltage = prefix.group(1);
+            String remainder = input.substring(prefix.end(1));
+            if (!voltage.equals(remainder)) return Set.of(voltage, remainder);
             return null;
         });
 
         inputMiddleware.add(new IInputFunction<>() {
 
             @Override
-            public Set<String> apply(String s) {
-                if (getConfigValue(ButtonConstants.LUA_SCRIPT) && !LuaPlugin.list.isEmpty()) {
-                    Set<String> set = new HashSet<>();
-                    for (LuaPlugin.LuaObject o : LuaPlugin.list) {
-                        if (o.getState()) {
-                            Set<String> r = o.inputHandler(s);
-                            if (r != null) {
-                                set.addAll(r);
-                            }
+            public Set<String> apply(String input) {
+                if (getConfigValue(ButtonConstants.LUA_SCRIPT)) {
+                    Set<String> terms = new HashSet<>();
+                    for (LuaPlugin.LuaObject script : LuaPlugin.list) {
+                        if (script.getState()) {
+                            terms.addAll(script.inputHandler(input));
                         }
                     }
-                    return set;
+                    return terms;
                 }
                 return null;
             }
@@ -90,5 +90,6 @@ public class PinInPlugin implements Runnable {
         });
         textMiddleware.sort(Comparator.comparing(IIndexFunction::index));
         inputMiddleware.sort(Comparator.comparing(IIndexFunction::index));
+        Match.refreshInput();
     }
 }
