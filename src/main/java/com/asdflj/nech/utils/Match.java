@@ -37,6 +37,17 @@ public class Match {
     private static final InputPlanCache inputCache = new InputPlanCache(32);
     private static final AtomicLong revision = new AtomicLong();
     private static PhoneticSettings phoneticSettings;
+    private static volatile boolean pinyinEnabled = true;
+
+    public static boolean isPinyinEnabled() {
+        return pinyinEnabled;
+    }
+
+    public static void setPinyinEnabled(boolean enabled) {
+        if (pinyinEnabled == enabled) return;
+        pinyinEnabled = enabled;
+        refreshInput();
+    }
 
     public static void addMatcher(BiPredicate<String, String> matcher) {
         additionalMatchers.add(Objects.requireNonNull(matcher, "matcher"));
@@ -83,6 +94,7 @@ public class Match {
     public static boolean containsRaw(String text, String query) {
         if (text == null || query == null) return false;
         if (text.contains(query)) return true;
+        if (!pinyinEnabled) return false;
         synchronized (context) {
             return context.contains(text, query);
         }
@@ -95,6 +107,7 @@ public class Match {
     public static boolean beginsRaw(String text, String query) {
         if (text == null || query == null) return false;
         if (text.startsWith(query)) return true;
+        if (!pinyinEnabled) return false;
         synchronized (context) {
             return context.begins(text, query);
         }
@@ -124,6 +137,7 @@ public class Match {
     public static boolean equals(String text, Object query) {
         if (text == null || !(query instanceof String input)) return false;
         if (text.equals(input)) return true;
+        if (!pinyinEnabled) return false;
         synchronized (context) {
             return context.matches(text, input);
         }
@@ -182,6 +196,7 @@ public class Match {
         if (leading && trailing) return contains(text, literal);
         if (trailing) return begins(text, literal);
         if (leading) {
+            if (!pinyinEnabled) return false;
             synchronized (context) {
                 for (int index = 0; index <= text.length(); index++) {
                     if (context.matches(text.substring(index), literal)) return true;

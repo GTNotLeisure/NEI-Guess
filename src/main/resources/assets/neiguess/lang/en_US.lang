@@ -107,6 +107,7 @@ neiguess.source.pick=Last
 
 neiguess.page.mixed=Mixed
 neiguess.page.search=Search
+neiguess.panel.empty=No suggestions in this mode
 neiguess.filter.all=All
 neiguess.filter.item=Items
 neiguess.tooltip.query=Searches: %s

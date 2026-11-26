@@ -6,6 +6,8 @@ import com.hfstudio.neiguess.Mods;
 
 public enum Mixins implements IMixins {
 
+    POPUP_INPUT(new MixinBuilder("Suggestion popup input capture").addClientMixins("input.MixinGuiScreenInput")
+        .setPhase(Phase.EARLY)),
     FML_SEARCH(new MixinBuilder("Client configuration and mod list search").addClientMixins("search.MixinFmlSearch")
         .setPhase(Phase.EARLY)
         .addRequiredMod(Mods.HodgePodge)),

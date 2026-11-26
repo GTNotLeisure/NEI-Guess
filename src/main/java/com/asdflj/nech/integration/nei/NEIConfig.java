@@ -1,6 +1,7 @@
 package com.asdflj.nech.integration.nei;
 
 import com.asdflj.nech.NeverEnoughCharacters;
+import com.asdflj.nech.utils.Match;
 import com.hfstudio.neiguess.Tags;
 
 import codechicken.lib.config.ConfigTagParent;
@@ -19,6 +20,7 @@ public class NEIConfig implements IConfigureNEI {
     @Override
     public void loadConfig() {
         if (registered) return;
+        API.addOption(new BaseToggleButton(ButtonConstants.PINYIN));
         API.addOption(new BaseToggleButton(ButtonConstants.COMMA));
         API.addOption(new BaseToggleButton(ButtonConstants.PARENTHESES));
         API.addOption(new BaseToggleButton(ButtonConstants.VOLTAGE));
@@ -30,6 +32,7 @@ public class NEIConfig implements IConfigureNEI {
     public static boolean getConfigValue(String identifier) {
         Settings current = settings;
         return switch (identifier) {
+            case ButtonConstants.PINYIN -> current.pinyin;
             case ButtonConstants.COMMA -> current.ignoreComma;
             case ButtonConstants.PARENTHESES -> current.ignoreParentheses;
             case ButtonConstants.VOLTAGE -> current.splitVoltage;
@@ -45,9 +48,11 @@ public class NEIConfig implements IConfigureNEI {
             readValue(ButtonConstants.COMMA),
             readValue(ButtonConstants.PARENTHESES),
             readValue(ButtonConstants.VOLTAGE),
-            readValue(ButtonConstants.LUA_SCRIPT));
+            readValue(ButtonConstants.LUA_SCRIPT),
+            readValue(ButtonConstants.PINYIN));
         if (settings.equals(current)) return false;
         settings = current;
+        Match.setPinyinEnabled(current.pinyin);
         return true;
     }
 
@@ -67,5 +72,11 @@ public class NEIConfig implements IConfigureNEI {
         return Tags.VERSION;
     }
 
-    public record Settings(boolean ignoreComma, boolean ignoreParentheses, boolean splitVoltage, boolean luaScript) {}
+    public record Settings(boolean ignoreComma, boolean ignoreParentheses, boolean splitVoltage, boolean luaScript,
+        boolean pinyin) {
+
+        public Settings(boolean ignoreComma, boolean ignoreParentheses, boolean splitVoltage, boolean luaScript) {
+            this(ignoreComma, ignoreParentheses, splitVoltage, luaScript, true);
+        }
+    }
 }

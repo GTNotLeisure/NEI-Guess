@@ -1,6 +1,10 @@
 # NEI-native option labels
 nei.options.nech=拼音搜索 - Rework
 nei.options.nech.tip=通过 NEI 原生设置调整拼音搜索行为。
+nei.options.nech.pinyin=启用拼音搜索
+nei.options.nech.pinyin.tip=动态启用或关闭全拼、简拼和模糊拼音匹配。普通文本搜索、词库别名与 Lua 设置保持独立
+nei.options.nech.pinyin.true=启用
+nei.options.nech.pinyin.false=禁用
 nei.options.nech.ignore_comma=匹配时忽略逗号
 nei.options.nech.ignore_comma.tip=在拼音匹配前移除候选文本中的逗号。
 nei.options.nech.ignore_comma.true=是

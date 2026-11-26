@@ -20,6 +20,7 @@ public class PinyinBridge {
         if (text == null || query == null || query.isBlank()) return false;
         String t = text.toLowerCase(Locale.ROOT), q = query.toLowerCase(Locale.ROOT);
         if (t.startsWith(q) || !prefixOnly && t.contains(q)) return true;
+        if (!Match.isPinyinEnabled()) return false;
         if (!isAscii(q) || isAscii(t)) return false;
         return begins(text, q) || !prefixOnly && contains(text, q);
     }

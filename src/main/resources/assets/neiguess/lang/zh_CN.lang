@@ -107,6 +107,7 @@ neiguess.source.pick=上次
 
 neiguess.page.mixed=混合
 neiguess.page.search=搜索
+neiguess.panel.empty=当前模式下没有建议
 neiguess.filter.all=全部
 neiguess.filter.item=物品
 neiguess.tooltip.query=实际搜索：%s

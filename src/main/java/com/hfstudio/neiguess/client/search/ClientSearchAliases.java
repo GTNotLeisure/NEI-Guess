@@ -36,7 +36,7 @@ public class ClientSearchAliases implements BiPredicate<String, String> {
 
     public static final ClientSearchAliases INSTANCE = new ClientSearchAliases();
     private final LRUCache<String, QueryPlan> plans = new LRUCache<>(128);
-    private volatile Snapshot snapshot = new Snapshot(Map.of(), null, Map.of());
+    private volatile Snapshot snapshot = new Snapshot(Map.of(), null, Map.of(), List.of());
     private Snapshot plansSnapshot;
     private long plansRevision = -1;
     private int apiRevision = -1;
@@ -167,8 +167,13 @@ public class ClientSearchAliases implements BiPredicate<String, String> {
         Set<String> aliases = new HashSet<>();
         if (!term.isEmpty()) {
             List<AliasRule> candidates;
-            synchronized (Match.context) {
-                candidates = snapshot.index == null ? List.of() : snapshot.index.search(term);
+            if (Match.isPinyinEnabled()) {
+                synchronized (Match.context) {
+                    candidates = snapshot.index == null ? List.of() : snapshot.index.search(term);
+                }
+            } else {
+                candidates = new ArrayList<>();
+                for (AliasRule rule : snapshot.rules) if (rule.alias.contains(term)) candidates.add(rule);
             }
             for (AliasRule rule : candidates) {
                 if (modOnly && rule.ore || oreOnly && !rule.ore) continue;
@@ -220,7 +225,7 @@ public class ClientSearchAliases implements BiPredicate<String, String> {
         synchronized (Match.context) {
             for (AliasRule rule : rules) index.put(rule.alias, rule);
         }
-        return new Snapshot(names, index, Map.copyOf(aliases));
+        return new Snapshot(names, index, Map.copyOf(aliases), List.copyOf(rules));
     }
 
     private static Map<String, Metadata> buildNames() {
@@ -259,7 +264,7 @@ public class ClientSearchAliases implements BiPredicate<String, String> {
     private record Metadata(Set<String> modNames, Set<String> ores) {}
 
     private record Snapshot(Map<String, Metadata> names, TreeSearcher<AliasRule> index,
-        Map<String, List<String>> aliases) {}
+        Map<String, List<String>> aliases, List<AliasRule> rules) {}
 
     private record QueryPlan(Snapshot snapshot, Set<String> modNames, List<Pattern> ores, List<String> aliases) {
 

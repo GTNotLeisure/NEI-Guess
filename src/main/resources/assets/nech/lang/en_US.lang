@@ -1,6 +1,10 @@
 # NEI-native option labels
 nei.options.nech=Phonetic Search - Rework
 nei.options.nech.tip=Configure phonetic matching through native NEI settings.
+nei.options.nech.pinyin=Enable pinyin search
+nei.options.nech.pinyin.tip=Toggle full pinyin, initials and fuzzy phonetic matching immediately. Literal search, word-list aliases and Lua settings remain independent
+nei.options.nech.pinyin.true=Enable
+nei.options.nech.pinyin.false=Disable
 nei.options.nech.ignore_comma=Ignore commas when matching
 nei.options.nech.ignore_comma.tip=Remove commas from candidate text before phonetic matching.
 nei.options.nech.ignore_comma.true=Yes

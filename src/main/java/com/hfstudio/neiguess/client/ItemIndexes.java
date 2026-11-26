@@ -15,6 +15,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.oredict.OreDictionary;
 
+import com.asdflj.nech.utils.Match;
 import com.hfstudio.neiguess.NEIGuess;
 import com.hfstudio.neiguess.config.ModConfig;
 
@@ -51,7 +52,7 @@ public class ItemIndexes {
 
     public record Hit(int start, int end, Link link) {}
 
-    private record NarrowCache(NameIndex index, String key, boolean prefixOnly, int[] matches) {}
+    private record NarrowCache(NameIndex index, String key, boolean prefixOnly, long revision, int[] matches) {}
 
     private static volatile NameIndex names = NameIndex.EMPTY;
     private static volatile Map<String, Link[]> links = new HashMap<>();
@@ -264,7 +265,7 @@ public class ItemIndexes {
             .toLowerCase(Locale.ROOT);
         if (key.length() > MAX_NAME) return out;
         int[] matches = matches(idx, key, prefixOnly);
-        boolean pinyin = PinyinBridge.isAscii(key);
+        boolean pinyin = Match.isPinyinEnabled() && PinyinBridge.isAscii(key);
         for (int pass = 0; pass < 2 && out.size() < limit; pass++) {
             for (int i : matches) {
                 if (out.size() >= limit) break;
@@ -277,10 +278,11 @@ public class ItemIndexes {
     }
 
     private static int[] matches(NameIndex idx, String key, boolean prefixOnly) {
-        boolean pinyin = PinyinBridge.isAscii(key);
+        boolean pinyin = Match.isPinyinEnabled() && PinyinBridge.isAscii(key);
+        long revision = Match.revision();
         NarrowCache c = narrow;
         int[] candidates = null;
-        if (c != null && c.index() == idx && c.prefixOnly() == prefixOnly) {
+        if (c != null && c.index() == idx && c.prefixOnly() == prefixOnly && c.revision() == revision) {
             if (c.key()
                 .equals(key)) return c.matches();
             // A one-letter pinyin query only checked prefixes, so it cannot narrow a substring search.
@@ -306,7 +308,7 @@ public class ItemIndexes {
             found[count++] = i;
         }
         int[] result = Arrays.copyOf(found, count);
-        narrow = new NarrowCache(idx, key, prefixOnly, result);
+        narrow = new NarrowCache(idx, key, prefixOnly, revision, result);
         return result;
     }
 

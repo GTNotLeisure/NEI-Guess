@@ -12,6 +12,7 @@ import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.item.ItemStack;
 
+import com.asdflj.nech.utils.Match;
 import com.hfstudio.neiguess.NEIGuess;
 
 import codechicken.nei.ItemList;
@@ -40,6 +41,7 @@ public class NeiBridge {
     };
 
     private static int cacheGeneration = -1;
+    private static long cacheSearchRevision = -1;
     private static Field innerField;
     private static Field historyField;
     private static Field historyListField;
@@ -145,9 +147,11 @@ public class NeiBridge {
         if (query == null || query.isBlank()) return true;
         List<ItemStack> items = ItemList.items;
         if (items == null || items.isEmpty()) return true;
-        if (cacheGeneration != ItemIndexes.generation()) {
+        long revision = Match.revision();
+        if (cacheGeneration != ItemIndexes.generation() || cacheSearchRevision != revision) {
             RESULT_CACHE.clear();
             cacheGeneration = ItemIndexes.generation();
+            cacheSearchRevision = revision;
         }
         String key = query.trim();
         Boolean cached = RESULT_CACHE.get(key);
