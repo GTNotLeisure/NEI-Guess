@@ -10,7 +10,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.hfstudio.neiguess.NEIGuess;
 
-public final class NEIGuessAPI {
+public class NEIGuessAPI {
 
     private static final List<ISuggestionSource> SOURCES = new CopyOnWriteArrayList<>();
     private static final Map<String, String> MOD_ALIASES = Collections.synchronizedMap(new LinkedHashMap<>());

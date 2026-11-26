@@ -1,0 +1,12 @@
+package com.asdflj.nech.integration.nei;
+
+public interface ButtonConstants {
+
+    String PINYIN = "nech.pinyin";
+    String COMMA = "nech.ignore_comma";
+    String PARENTHESES = "nech.parentheses";
+    String VOLTAGE = "nech.contain_with_voltage";
+    String LUA_SCRIPT = "nech.lua_script";
+    String LUA_SCRIPTS = "nech.lua_scripts";
+
+}

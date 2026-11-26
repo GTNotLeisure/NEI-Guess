@@ -9,7 +9,6 @@ import java.util.Map;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -20,8 +19,12 @@ import net.minecraft.util.EnumChatFormatting;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
+import com.asdflj.nech.utils.Match;
 import com.hfstudio.neiguess.NEIGuess;
 import com.hfstudio.neiguess.api.Suggestion;
+import com.hfstudio.neiguess.client.input.OverlayKeyBindings;
+import com.hfstudio.neiguess.client.input.PointerCapture;
+import com.hfstudio.neiguess.client.overlay.SuggestionPanelTheme;
 import com.hfstudio.neiguess.config.ModConfig;
 
 import codechicken.lib.gui.GuiDraw;
@@ -31,7 +34,7 @@ import codechicken.nei.guihook.IContainerInputHandler;
 import codechicken.nei.guihook.IContainerObjectHandler;
 import codechicken.nei.guihook.IContainerTooltipHandler;
 
-public final class SuggestOverlay
+public class SuggestOverlay
     implements IContainerDrawHandler, IContainerInputHandler, IContainerObjectHandler, IContainerTooltipHandler {
 
     public static final SuggestOverlay INSTANCE = new SuggestOverlay();
@@ -39,14 +42,6 @@ public final class SuggestOverlay
     private static final int LINE_H = 12;
     private static final int PAD = 3;
     private static final int HEADER_H = 10;
-    private static final int BG = 0xF0101010;
-    private static final int BORDER = 0xFF4A90D9;
-    private static final int SEL_BG = 0xC02B6CB0;
-    private static final int HINT = 0xFF888888;
-    private static final int GHOST = 0xFF707070;
-    private static final int CHIP = 0xFFB07CE8;
-    private static final int GOLD = 0xFFFFD700;
-    private static final int HELP_BG = 0xF0181818;
     private static final int HELP_LINES = 8;
     private static final long AUTO_FOCUS_WINDOW_MS = 400L;
     private static final String NONE = "\u0000";
@@ -56,12 +51,14 @@ public final class SuggestOverlay
     private Suggestion.Source filter = null;
     private int page = 0;
     private String lastInput = NONE;
+    private long lastSearchRevision = -1;
     private String completion = "";
     private int hovered = -1;
     private boolean visible = false;
     private int px, py, pw, ph, rowTop;
     private int chipX, chipW, helpX;
     private boolean helpHovered = false;
+    private final PointerCapture<GuiScreen> pointerCapture = new PointerCapture<>();
 
     private GuiScreen trackedGui;
     private long guiOpenedAt;
@@ -97,12 +94,14 @@ public final class SuggestOverlay
     }
 
     private void rebuild(String input, boolean force) {
-        if (!force && input.equals(lastInput)) return;
+        long revision = Match.revision();
+        if (!force && input.equals(lastInput) && lastSearchRevision == revision) return;
         if (!input.equals(lastInput)) {
             page = 0;
             if (input.isBlank()) filter = null;
         }
         lastInput = input;
+        lastSearchRevision = revision;
         try {
             if (input.isBlank()) {
                 pages = SuggestionEngine.browsePages();
@@ -223,10 +222,6 @@ public final class SuggestOverlay
         try {
             if (!completion.isEmpty()) drawGhost(font, input);
             List<Suggestion> vis = current();
-            if (vis.isEmpty()) {
-                visible = false;
-                return;
-            }
             visible = true;
             drawPanel(gui, font, vis, input, mx, my);
         } finally {
@@ -236,12 +231,12 @@ public final class SuggestOverlay
     }
 
     private void drawPanel(GuiContainer gui, FontRenderer font, List<Suggestion> vis, String input, int mx, int my) {
-        String head = EnumChatFormatting.AQUA + "NEI Guess"
-            + (pages.size() > 1 ? EnumChatFormatting.YELLOW + " " + (page + 1) + "/" + pages.size() : "");
+        String head = "NEI Guess" + (pages.size() > 1 ? " " + (page + 1) + "/" + pages.size() : "");
         String chip = "[" + (input.isBlank() ? currentLabel() : filterName(filter)) + "]";
         int w = Math.max(
             ModConfig.panel.panelWidth,
             PAD * 4 + font.getStringWidth(head) + 6 + font.getStringWidth(chip) + 6 + font.getStringWidth("?") + 6);
+        if (vis.isEmpty()) w = Math.max(w, PAD * 2 + font.getStringWidth(NEIGuess.tr("panel.empty")));
         for (Suggestion s : vis) {
             String tag = s.label()
                 .isEmpty() ? "" : "[" + s.label() + "] ";
@@ -250,7 +245,7 @@ public final class SuggestOverlay
             w = Math.max(w, PAD * 2 + font.getStringWidth(tag) + font.getStringWidth(s.display()) + badge + 10);
         }
         w = Math.min(w, Math.max(120, gui.width - 8));
-        int h = vis.size() * LINE_H + PAD * 2 + HEADER_H;
+        int h = Math.max(1, vis.size()) * LINE_H + PAD * 2 + HEADER_H;
 
         GuiTextField inputBox = NeiBridge.innerBox();
         if (inputBox != null) {
@@ -272,39 +267,51 @@ public final class SuggestOverlay
             if (local >= 0 && local < vis.size()) hovered = local;
         }
 
-        Gui.drawRect(px - 1, py - 1, px + w + 1, py + h + 1, BORDER);
-        Gui.drawRect(px, py, px + w, py + h, BG);
+        SuggestionPanelTheme.drawFrame(px, py, w, h);
+        SuggestionPanelTheme.drawHeader(px, py, w, rowTop);
         int cy = py + PAD;
         int cx = px + PAD;
-        font.drawString(head, cx, cy, HINT);
+        font.drawString(head, cx, cy, SuggestionPanelTheme.TEXT);
         cx += font.getStringWidth(head) + 6;
         chipX = cx;
         chipW = font.getStringWidth(chip);
         boolean chipHover = mx >= chipX - 2 && mx <= chipX + chipW + 2 && my >= cy - 2 && my <= cy + HEADER_H;
-        font.drawString(chip, chipX, cy, chipHover ? GOLD : CHIP);
+        SuggestionPanelTheme.drawControl(chipX - 2, cy - 2, chipW + 4, HEADER_H + 2, chipHover);
+        font.drawString(chip, chipX, cy, chipHover ? SuggestionPanelTheme.HOVER_TEXT : SuggestionPanelTheme.TEXT);
         helpX = px + w - PAD - font.getStringWidth("?");
         helpHovered = mx >= helpX - 3 && mx <= helpX + font.getStringWidth("?") + 3 && my >= cy - 3 && my <= cy + 11;
-        font.drawString("?", helpX, cy, helpHovered ? GOLD : HINT);
+        SuggestionPanelTheme.drawControl(helpX - 3, cy - 2, font.getStringWidth("?") + 6, HEADER_H + 2, helpHovered);
+        font.drawString(
+            "?",
+            helpX,
+            cy,
+            helpHovered ? SuggestionPanelTheme.HOVER_TEXT : SuggestionPanelTheme.MUTED_TEXT);
 
         int y = rowTop;
+        if (vis.isEmpty())
+            font.drawString(NEIGuess.tr("panel.empty"), px + PAD, y + 2, SuggestionPanelTheme.MUTED_TEXT);
         int nameRight = px + w - PAD - 2;
         for (int i = 0; i < vis.size(); i++) {
             Suggestion s = vis.get(i);
             boolean sel = i == hovered;
-            if (sel) Gui.drawRect(px + 1, y - 1, px + w - 1, y + LINE_H - 1, SEL_BG);
+            if (sel) SuggestionPanelTheme.drawSelection(px + 1, y - 1, w - 2, LINE_H);
             int textX = px + PAD;
             if (!s.label()
                 .isEmpty()) {
                 String tag = "[" + s.label() + "]";
-                font.drawString(tag, textX, y + 2, s.color());
+                font.drawString(tag, textX, y + 2, SuggestionPanelTheme.labelColor(s.color()));
                 textX += font.getStringWidth(tag) + 3;
             }
             boolean showBadge = !s.badge()
                 .isEmpty() && (!s.badgeOnHover() || sel);
             int badgeW = showBadge ? font.getStringWidth(s.badge()) + 4 : 0;
             String name = fit(font, s.display(), nameRight - textX - badgeW);
-            font.drawString(name, textX, y + 2, sel ? 0xFFFFFFFF : s.color());
-            if (showBadge) font.drawString(s.badge(), nameRight - font.getStringWidth(s.badge()), y + 2, HINT);
+            font.drawString(name, textX, y + 2, sel ? SuggestionPanelTheme.SELECTED_TEXT : SuggestionPanelTheme.TEXT);
+            if (showBadge) font.drawString(
+                s.badge(),
+                nameRight - font.getStringWidth(s.badge()),
+                y + 2,
+                SuggestionPanelTheme.MUTED_TEXT);
             y += LINE_H;
         }
         if (helpHovered) drawHelp(gui, font, mx, my);
@@ -319,11 +326,10 @@ public final class SuggestOverlay
         int h = lines.size() * (LINE_H - 2) + PAD * 2 + 2;
         int x = Math.max(2, Math.min(mx + 8, gui.width - w - 2));
         int y = Math.max(2, Math.min(my + 8, gui.height - h - 2));
-        Gui.drawRect(x - 1, y - 1, x + w + 1, y + h + 1, BORDER);
-        Gui.drawRect(x, y, x + w, y + h, HELP_BG);
+        SuggestionPanelTheme.drawFrame(x, y, w, h);
         int ty = y + PAD + 1;
         for (String s : lines) {
-            font.drawString(s, x + PAD, ty, 0xFFDDDDDD);
+            font.drawString(s, x + PAD, ty, SuggestionPanelTheme.TEXT);
             ty += LINE_H - 2;
         }
     }
@@ -336,7 +342,7 @@ public final class SuggestOverlay
         int x = box.xPosition + 4 + font.getStringWidth(input);
         if (x + font.getStringWidth(rest) > box.xPosition + box.width - 4) return;
         int y = box.yPosition + (box.height - 8) / 2;
-        font.drawString(rest, x, y, GHOST);
+        font.drawString(rest, x, y, SuggestionPanelTheme.SUBTLE_TEXT);
     }
 
     @Override
@@ -346,7 +352,7 @@ public final class SuggestOverlay
     public void renderSlotOverlay(GuiContainer gui, Slot slot) {}
 
     private boolean inside(int mx, int my) {
-        return mx >= px && mx <= px + pw && my >= py && my <= py + ph;
+        return mx >= px - 1 && mx <= px + pw + 1 && my >= py - 1 && my <= py + ph + 1;
     }
 
     private int rowAt(int mx, int my) {
@@ -372,12 +378,30 @@ public final class SuggestOverlay
         }
     }
 
+    public boolean handleMouseInput(GuiScreen screen, int mx, int my, int button, boolean pressed, int wheel) {
+        if (!pressed && pointerCapture.release(button)) return true;
+        boolean captured = pointerCapture.ownedBy(screen);
+        boolean overPanel = screen == trackedGui && visible && inside(mx, my);
+        if (button >= 0 && pressed && (captured || overPanel)) {
+            // Capture before an action changes the panel's visibility or bounds.
+            pointerCapture.press(screen, button);
+            if (overPanel && screen instanceof GuiContainer container) mouseClicked(container, mx, my, button);
+            return true;
+        }
+        if (captured) return true;
+        if (overPanel && wheel != 0 && screen instanceof GuiContainer container) {
+            mouseScrolled(container, mx, my, wheel > 0 ? 1 : -1);
+            return true;
+        }
+        return false;
+    }
+
     @Override
     public boolean mouseClicked(GuiContainer gui, int mx, int my, int button) {
         if (!visible || !inside(mx, my)) return false;
-        // NEI unfocused the search box when the click landed outside it; the panel belongs to the box.
+        // The popup and its search field share keyboard focus.
         NeiBridge.setFocus(true);
-        if (helpHovered) return true;
+        if (mx >= helpX - 3 && mx <= px + pw - PAD + 3 && my >= py + PAD - 3 && my <= py + PAD + 11) return true;
         if (mx >= chipX - 2 && mx <= chipX + chipW + 2 && my >= py + PAD - 2 && my <= py + PAD + HEADER_H) {
             if (NeiBridge.text()
                 .isBlank()) turnPage(1);
@@ -436,21 +460,10 @@ public final class SuggestOverlay
     @Override
     public void onMouseDragged(GuiContainer gui, int mx, int my, int button, long heldTime) {}
 
-    private static int pagingDirection(int key) {
-        for (String name : ModConfig.panel.pagingKeys) {
-            if (name == null || Keyboard.getKeyIndex(
-                name.trim()
-                    .toUpperCase(Locale.ROOT))
-                != key) continue;
-            String n = name.toUpperCase(Locale.ROOT);
-            if (n.contains("UP") || n.contains("LEFT") || n.contains("PRIOR")) return 0;
-            if (n.contains("DOWN") || n.contains("RIGHT") || n.contains("NEXT")) return 1;
-        }
-        return -1;
-    }
-
     @Override
     public boolean keyTyped(GuiContainer gui, char keyChar, int key) {
+        // IME commits have no physical key and must reach the native text field.
+        if (key == Keyboard.KEY_NONE) return false;
         if (!NeiBridge.isSearchFocused()) return false;
         String input = NeiBridge.text();
         if (key == Keyboard.KEY_RETURN || key == Keyboard.KEY_NUMPADENTER) {
@@ -477,12 +490,12 @@ public final class SuggestOverlay
             }
             return false;
         }
-        int dir = pagingDirection(key);
-        if (dir >= 0) {
+        int offset = OverlayKeyBindings.pagingOffset(key, ModConfig.panel.pagingKeys);
+        if (offset != 0) {
             boolean arrow = key == Keyboard.KEY_LEFT || key == Keyboard.KEY_RIGHT;
             if (arrow && !input.isBlank() && ModConfig.panel.pagingNeedsEmptyInput) return false;
             if (pages.size() <= 1) return false;
-            turnPage(dir == 1 ? 1 : -1);
+            turnPage(offset);
             return true;
         }
         return false;
@@ -494,7 +507,7 @@ public final class SuggestOverlay
         try {
             if (key != NEIClientConfig.getKeyBinding("gui.recipe") && key != NEIClientConfig.getKeyBinding("gui.usage"))
                 return;
-            java.awt.Point p = GuiDraw.getMousePosition();
+            Point p = GuiDraw.getMousePosition();
             recordPick(p.x, p.y);
         } catch (Throwable ignored) {}
     }

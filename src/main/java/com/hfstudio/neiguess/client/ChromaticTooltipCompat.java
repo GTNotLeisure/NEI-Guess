@@ -8,7 +8,7 @@ import com.slprime.chromatictooltips.api.TooltipTarget;
 
 import codechicken.lib.gui.GuiDraw;
 
-public final class ChromaticTooltipCompat implements ITargetSanitizer {
+public class ChromaticTooltipCompat implements ITargetSanitizer {
 
     private static final ChromaticTooltipCompat INSTANCE = new ChromaticTooltipCompat();
 

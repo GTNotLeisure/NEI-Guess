@@ -1,0 +1,65 @@
+# NEI-native option labels
+nei.options.nech=Phonetic Search - Rework
+nei.options.nech.tip=Configure phonetic matching through native NEI settings.
+nei.options.nech.pinyin=Enable pinyin search
+nei.options.nech.pinyin.tip=Toggle full pinyin, initials and fuzzy phonetic matching immediately. Literal search, word-list aliases and Lua settings remain independent
+nei.options.nech.pinyin.true=Enable
+nei.options.nech.pinyin.false=Disable
+nei.options.nech.ignore_comma=Ignore commas when matching
+nei.options.nech.ignore_comma.tip=Remove commas from candidate text before phonetic matching.
+nei.options.nech.ignore_comma.true=Yes
+nei.options.nech.ignore_comma.false=No
+nei.options.nech.parentheses=Ignore parentheses when matching
+nei.options.nech.parentheses.tip=Remove round parentheses from candidate text before phonetic matching.
+nei.options.nech.parentheses.true=Yes
+nei.options.nech.parentheses.false=No
+nei.options.nech.contain_with_voltage=Split voltage prefixes when matching
+nei.options.nech.contain_with_voltage.tip=Match a voltage prefix and the remaining text separately, for example hvpump.
+nei.options.nech.contain_with_voltage.true=Yes
+nei.options.nech.contain_with_voltage.false=No
+nei.options.nech.lua_script=Enable custom Lua search scripts
+nei.options.nech.lua_script.tip=Apply enabled scripts from the pinin directory to search text and input.
+nei.options.nech.lua_script.true=Yes
+nei.options.nech.lua_script.false=No
+nei.options.nech.lua_scripts=Lua scripts
+nei.options.nech.lua_scripts.tip=Enable individual scripts; use /nech reload after editing their files.
+
+# Shared option states
+nech.state.enabled=Enabled
+nech.state.disabled=Disabled
+
+# Client messages
+nech.message.reload.started=Reloading NECH configuration and Lua scripts
+nech.message.reload.completed=Reload complete
+nech.message.lua.invalid=Invalid Lua script: %s
+nech.message.profile.started=Scanning mod search predicates
+nech.message.profile.saved=Search profiler report saved
+nech.message.profile.failed=Unable to save the search profiler report
+
+# GTNHLib configuration labels
+nech.config.general=Phonetic search
+nech.config.general.tooltip=Client-side phonetic matching, keyboard layout and search transformer integration.
+nech.config.debug.verbose=Verbose search transformer logging
+nech.config.debug.verbose.tooltip=Log each class modified by the client search transformer.
+nech.config.keyboard.type=Keyboard layout
+nech.config.keyboard.type.tooltip=Choose full pinyin or the phonetic keyboard layout used for search input.
+nech.config.fuzzy.zh_z=Match Zh and Z
+nech.config.fuzzy.zh_z.tooltip=Treat Zh and Z as interchangeable phonetic initials.
+nech.config.fuzzy.sh_s=Match Sh and S
+nech.config.fuzzy.sh_s.tooltip=Treat Sh and S as interchangeable phonetic initials.
+nech.config.fuzzy.ch_c=Match Ch and C
+nech.config.fuzzy.ch_c.tooltip=Treat Ch and C as interchangeable phonetic initials.
+nech.config.fuzzy.ang_an=Match Ang and An
+nech.config.fuzzy.ang_an.tooltip=Treat Ang and An as interchangeable phonetic finals.
+nech.config.fuzzy.ing_in=Match Ing and In
+nech.config.fuzzy.ing_in.tooltip=Treat Ing and In as interchangeable phonetic finals.
+nech.config.fuzzy.eng_en=Match Eng and En
+nech.config.fuzzy.eng_en.tooltip=Treat Eng and En as interchangeable phonetic finals.
+nech.config.fuzzy.u_v=Match U and V
+nech.config.fuzzy.u_v.tooltip=Treat U and V as interchangeable in phonetic input.
+nech.config.transformers.additional.regex=Additional regex predicates
+nech.config.transformers.additional.regex.tooltip=Additional regex search methods, using class:method or class:method(JVM descriptor). Requires a game restart.
+nech.config.transformers.additional.string=Additional text predicates
+nech.config.transformers.additional.string.tooltip=Additional text search methods, using class:method or class:method(JVM descriptor). Requires a game restart.
+nech.config.transformers.blacklist=Excluded search methods
+nech.config.transformers.blacklist.tooltip=Exclude ASM roots and lambda implementations using class:method, an exact JVM descriptor or class:*. Requires a game restart.

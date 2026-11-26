@@ -1,4 +1,5 @@
 neiguess.gui.config.general=General Config
+neiguess.gui.config.general.tooltip=Configure suggestions, search sources, chat links and word lists.
 
 neiguess.gui.config.general.panel=Suggestion Panel
 neiguess.gui.config.general.panel.tooltip=The panel shown above the NEI search box.
@@ -106,6 +107,7 @@ neiguess.source.pick=Last
 
 neiguess.page.mixed=Mixed
 neiguess.page.search=Search
+neiguess.panel.empty=No suggestions in this mode
 neiguess.filter.all=All
 neiguess.filter.item=Items
 neiguess.tooltip.query=Searches: %s

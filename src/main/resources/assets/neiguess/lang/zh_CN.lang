@@ -1,4 +1,5 @@
 neiguess.gui.config.general=总览配置
+neiguess.gui.config.general.tooltip=配置搜索建议、建议来源、聊天链接和词库。
 
 neiguess.gui.config.general.panel=候选面板
 neiguess.gui.config.general.panel.tooltip=NEI 搜索框上方弹出的候选面板
@@ -106,6 +107,7 @@ neiguess.source.pick=上次
 
 neiguess.page.mixed=混合
 neiguess.page.search=搜索
+neiguess.panel.empty=当前模式下没有建议
 neiguess.filter.all=全部
 neiguess.filter.item=物品
 neiguess.tooltip.query=实际搜索：%s

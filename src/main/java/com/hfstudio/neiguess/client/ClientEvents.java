@@ -16,14 +16,16 @@ import net.minecraftforge.oredict.OreDictionary;
 
 import com.hfstudio.neiguess.NEIGuess;
 import com.hfstudio.neiguess.client.quest.QuestTracker;
+import com.hfstudio.neiguess.client.search.ClientSearchAliases;
 import com.hfstudio.neiguess.config.ModConfig;
 
+import cpw.mods.fml.client.event.ConfigChangedEvent;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.network.FMLNetworkEvent;
 
-public final class ClientEvents {
+public class ClientEvents {
 
     public static final ClientEvents INSTANCE = new ClientEvents();
     private static final int MAX_LENGTH = 512;
@@ -35,6 +37,7 @@ public final class ClientEvents {
     @SubscribeEvent
     public void onClientTick(TickEvent.ClientTickEvent event) {
         if (event.phase != TickEvent.Phase.END) return;
+        ClientSearchAliases.INSTANCE.tick();
         if (disconnected) {
             disconnected = false;
             SearchHistoryStore.get()
@@ -49,6 +52,11 @@ public final class ClientEvents {
     @SubscribeEvent
     public void onDisconnect(FMLNetworkEvent.ClientDisconnectionFromServerEvent event) {
         disconnected = true;
+    }
+
+    @SubscribeEvent
+    public void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent event) {
+        if (NEIGuess.MODID.equals(event.modID)) Lexicon.invalidate();
     }
 
     @SubscribeEvent(priority = EventPriority.LOW)
