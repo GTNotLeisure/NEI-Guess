@@ -42,6 +42,7 @@ public class SuggestOverlay
 
     private static final int LINE_H = 12;
     private static final int PAD = 3;
+    private static final int BOTTOM_PAD = 1;
     private static final int HEADER_H = 10;
     private static final int HELP_LINES = 8;
     private static final long AUTO_FOCUS_WINDOW_MS = 400L;
@@ -254,13 +255,12 @@ public class SuggestOverlay
                 .isEmpty() || s.badgeOnHover() ? 0 : font.getStringWidth(s.badge()) + 4;
             w = Math.max(w, PAD * 2 + font.getStringWidth(tag) + font.getStringWidth(s.display()) + badge + 10);
         }
-        w = Math.min(w, Math.max(120, gui.width - 8));
-        int h = Math.max(1, vis.size()) * LINE_H + PAD * 2 + HEADER_H;
+        int h = Math.max(1, vis.size()) * LINE_H + PAD + BOTTOM_PAD + HEADER_H;
 
         GuiTextField inputBox = NeiBridge.innerBox();
         if (inputBox != null) {
-            int searchLeft = inputBox.xPosition;
-            px = Math.max(2, Math.min(searchLeft, gui.width - w - 2));
+            w = Math.max(w, inputBox.width);
+            px = inputBox.xPosition;
             py = inputBox.yPosition - h - 3;
             if (py < 2) py = inputBox.yPosition + inputBox.height + 3;
         } else {
@@ -285,12 +285,12 @@ public class SuggestOverlay
         cx += font.getStringWidth(head) + 6;
         chipX = cx;
         chipW = font.getStringWidth(chip);
-        boolean chipHover = mx >= chipX - 2 && mx <= chipX + chipW + 2 && my >= cy - 2 && my <= cy + HEADER_H;
-        SuggestionPanelTheme.drawControl(chipX - 2, cy - 2, chipW + 4, HEADER_H + 2, chipHover);
+        boolean chipHover = headerControlContains(mx, my, chipX - 2, chipW + 4);
+        SuggestionPanelTheme.drawControl(chipX - 2, cy - 1, chipW + 4, HEADER_H, chipHover);
         font.drawString(chip, chipX, cy, chipHover ? SuggestionPanelTheme.HOVER_TEXT : SuggestionPanelTheme.TEXT);
         helpX = px + w - PAD - font.getStringWidth("?");
-        helpHovered = mx >= helpX - 3 && mx <= helpX + font.getStringWidth("?") + 3 && my >= cy - 3 && my <= cy + 11;
-        SuggestionPanelTheme.drawControl(helpX - 3, cy - 2, font.getStringWidth("?") + 6, HEADER_H + 2, helpHovered);
+        helpHovered = headerControlContains(mx, my, helpX - 2, font.getStringWidth("?") + 4);
+        SuggestionPanelTheme.drawControl(helpX - 2, cy - 1, font.getStringWidth("?") + 4, HEADER_H, helpHovered);
         font.drawString(
             "?",
             helpX,
@@ -304,7 +304,7 @@ public class SuggestOverlay
         for (int i = 0; i < vis.size(); i++) {
             Suggestion s = vis.get(i);
             boolean sel = i == hovered;
-            if (sel) SuggestionPanelTheme.drawSelection(px + 1, y - 1, w - 2, LINE_H);
+            if (sel) SuggestionPanelTheme.drawSelection(px + 1, y, w - 2, LINE_H);
             int textX = px + PAD;
             if (!s.label()
                 .isEmpty()) {
@@ -365,6 +365,10 @@ public class SuggestOverlay
         return mx >= px - 1 && mx <= px + pw + 1 && my >= py - 1 && my <= py + ph + 1;
     }
 
+    private boolean headerControlContains(int mx, int my, int x, int width) {
+        return mx >= x && mx < x + width && my >= py + PAD - 1 && my < rowTop - 1;
+    }
+
     private int rowAt(int mx, int my) {
         if (!visible || !inside(mx, my)) return -1;
         int local = Math.floorDiv(my - rowTop, LINE_H);
@@ -411,8 +415,9 @@ public class SuggestOverlay
         if (!visible || !inside(mx, my)) return false;
         // The popup and its search field share keyboard focus.
         NeiBridge.setFocus(true);
-        if (mx >= helpX - 3 && mx <= px + pw - PAD + 3 && my >= py + PAD - 3 && my <= py + PAD + 11) return true;
-        if (mx >= chipX - 2 && mx <= chipX + chipW + 2 && my >= py + PAD - 2 && my <= py + PAD + HEADER_H) {
+        if (headerControlContains(mx, my, helpX - 2, Minecraft.getMinecraft().fontRenderer.getStringWidth("?") + 4))
+            return true;
+        if (headerControlContains(mx, my, chipX - 2, chipW + 4)) {
             if (NeiBridge.text()
                 .isBlank()) turnPage(1);
             else cycleFilter();
