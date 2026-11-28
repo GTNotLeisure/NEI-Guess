@@ -35,10 +35,9 @@ import me.towdium.pinin.searchers.TreeSearcher;
 public class ClientSearchAliases implements BiPredicate<String, String> {
 
     public static final ClientSearchAliases INSTANCE = new ClientSearchAliases();
-    private final LRUCache<String, QueryPlan> plans = new LRUCache<>(128);
-    private volatile Snapshot snapshot = new Snapshot(Map.of(), null, Map.of(), List.of());
-    private Snapshot plansSnapshot;
-    private long plansRevision = -1;
+    private final ThreadLocal<LocalPlan> plans = new ThreadLocal<>();
+    private volatile PlanCache sharedPlans;
+    private volatile Snapshot snapshot = new Snapshot(Map.of(), null, Map.of(), List.of(), Map.of());
     private int apiRevision = -1;
     private int itemGeneration = -1;
     private long lexiconRevision = -1;
@@ -46,8 +45,8 @@ public class ClientSearchAliases implements BiPredicate<String, String> {
     private long phoneticRevision = -1;
     private boolean initialized;
     private volatile long snapshotRevision;
-    private char modPrefix;
-    private char orePrefix;
+    private volatile char modPrefix;
+    private volatile char orePrefix;
 
     private ClientSearchAliases() {}
 
@@ -69,9 +68,6 @@ public class ClientSearchAliases implements BiPredicate<String, String> {
         boolean queryChanged = modPrefix != currentModPrefix || orePrefix != currentOrePrefix
             || phoneticRevision != currentPhoneticRevision;
         if (queryChanged) {
-            synchronized (plans) {
-                plans.clear();
-            }
             modPrefix = currentModPrefix;
             orePrefix = currentOrePrefix;
             phoneticRevision = currentPhoneticRevision;
@@ -110,52 +106,61 @@ public class ClientSearchAliases implements BiPredicate<String, String> {
         Metadata metadata = plan.snapshot.names.get(normalized);
         if (metadata != null && plan.matches(metadata)) return true;
         if (plan.modNames.contains(normalized)) return true;
-        for (Pattern ore : plan.ores) {
-            if (ore.matcher(text)
-                .find()) return true;
-        }
-        for (String alias : plan.aliases) {
-            if (normalized.contains(alias)) return true;
-        }
-        return false;
+        return plan.oreMatcher.matches(text) || plan.aliases.contains(normalized);
     }
 
     public boolean matchesItem(ItemStack stack, String query) {
         if (stack == null || stack.getItem() == null || query == null) return false;
         QueryPlan plan = plan(query);
         if (plan.isEmpty()) return false;
-        if (plan.modNames.contains(normalize(NativeModAccess.name(stack)))) return true;
-        for (int id : OreDictionary.getOreIDs(stack)) {
-            String ore = OreDictionary.getOreName(id);
-            for (Pattern pattern : plan.ores) if (pattern.matcher(ore)
-                .find()) return true;
+        if (!plan.modNames.isEmpty() && plan.modNames.contains(normalize(NativeModAccess.name(stack)))) return true;
+        if (!plan.oreMatcher.isEmpty()) {
+            for (int id : OreDictionary.getOreIDs(stack)) {
+                if (plan.oreIds.contains(id)
+                    || id >= plan.snapshot.oreIds.size() && plan.oreMatcher.matches(OreDictionary.getOreName(id)))
+                    return true;
+            }
         }
         return false;
     }
 
     private QueryPlan plan(String query) {
-        synchronized (plans) {
-            Snapshot current = snapshot;
-            long revision = Match.revision();
-            if (plansSnapshot != current || plansRevision != revision) {
-                plans.clear();
-                plansSnapshot = current;
-                plansRevision = revision;
+        Snapshot current = snapshot;
+        long revision = Match.revision();
+        char currentModPrefix = modPrefix;
+        char currentOrePrefix = orePrefix;
+        PlanCache cache = sharedPlans;
+        if (cache == null || cache.snapshot != current
+            || cache.revision != revision
+            || cache.modPrefix != currentModPrefix
+            || cache.orePrefix != currentOrePrefix) {
+            synchronized (this) {
+                cache = sharedPlans;
+                if (cache == null || cache.snapshot != current
+                    || cache.revision != revision
+                    || cache.modPrefix != currentModPrefix
+                    || cache.orePrefix != currentOrePrefix) {
+                    cache = new PlanCache(current, revision, currentModPrefix, currentOrePrefix, new LRUCache<>(128));
+                    sharedPlans = cache;
+                }
             }
-            String key = normalize(query);
-            QueryPlan plan = plans.get(key);
-            if (plan == null) {
-                plan = compile(current, key);
-                plans.put(key, plan);
-            }
-            return plan;
         }
+        LocalPlan local = plans.get();
+        if (local != null && local.owner == cache && local.query.equals(query)) return local.plan;
+        QueryPlan plan;
+        synchronized (cache.entries) {
+            plan = cache.entries.get(query);
+            if (plan == null) {
+                plan = compile(cache.snapshot, normalize(query), cache.modPrefix, cache.orePrefix);
+                cache.entries.put(query, plan);
+            }
+        }
+        plans.set(new LocalPlan(cache, query, plan));
+        return plan;
     }
 
-    private static QueryPlan compile(Snapshot snapshot, String query) {
+    private static QueryPlan compile(Snapshot snapshot, String query, char modPrefix, char orePrefix) {
         char kind = query.isEmpty() ? 0 : query.charAt(0);
-        char modPrefix = SearchField.searchParser.getRedefinedPrefix('@');
-        char orePrefix = SearchField.searchParser.getRedefinedPrefix('$');
         boolean modOnly = kind == '@' || kind == modPrefix;
         boolean oreOnly = kind == '$' || kind == orePrefix;
         String term = modOnly || oreOnly ? query.substring(1) : query;
@@ -183,7 +188,24 @@ public class ClientSearchAliases implements BiPredicate<String, String> {
                 aliases.addAll(snapshot.aliases.getOrDefault((rule.ore ? "$" : "@") + rule.target, List.of()));
             }
         }
-        return new QueryPlan(snapshot, Set.copyOf(modNames), List.copyOf(ores), List.copyOf(aliases));
+        AliasPatternMatcher oreMatcher = AliasPatternMatcher.of(ores);
+        Set<String> oreNames = new HashSet<>();
+        Set<Integer> oreIds = new HashSet<>();
+        if (!oreMatcher.isEmpty()) {
+            snapshot.oreIds.forEach((name, id) -> {
+                if (oreMatcher.matches(name)) {
+                    oreNames.add(name);
+                    oreIds.add(id);
+                }
+            });
+        }
+        return new QueryPlan(
+            snapshot,
+            Set.copyOf(modNames),
+            Set.copyOf(oreNames),
+            Set.copyOf(oreIds),
+            oreMatcher,
+            LiteralSearchIndex.of(aliases, false));
     }
 
     private static Snapshot buildSnapshot(Map<String, Metadata> names) {
@@ -225,7 +247,9 @@ public class ClientSearchAliases implements BiPredicate<String, String> {
         synchronized (Match.context) {
             for (AliasRule rule : rules) index.put(rule.alias, rule);
         }
-        return new Snapshot(names, index, Map.copyOf(aliases), List.copyOf(rules));
+        Map<String, Integer> oreIds = new HashMap<>();
+        for (String name : OreDictionary.getOreNames()) oreIds.put(name, OreDictionary.getOreID(name));
+        return new Snapshot(names, index, Map.copyOf(aliases), List.copyOf(rules), Map.copyOf(oreIds));
     }
 
     private static Map<String, Metadata> buildNames() {
@@ -264,20 +288,23 @@ public class ClientSearchAliases implements BiPredicate<String, String> {
     private record Metadata(Set<String> modNames, Set<String> ores) {}
 
     private record Snapshot(Map<String, Metadata> names, TreeSearcher<AliasRule> index,
-        Map<String, List<String>> aliases, List<AliasRule> rules) {}
+        Map<String, List<String>> aliases, List<AliasRule> rules, Map<String, Integer> oreIds) {}
 
-    private record QueryPlan(Snapshot snapshot, Set<String> modNames, List<Pattern> ores, List<String> aliases) {
+    private record PlanCache(Snapshot snapshot, long revision, char modPrefix, char orePrefix,
+        LRUCache<String, QueryPlan> entries) {}
+
+    private record LocalPlan(PlanCache owner, String query, QueryPlan plan) {}
+
+    private record QueryPlan(Snapshot snapshot, Set<String> modNames, Set<String> oreNames, Set<Integer> oreIds,
+        AliasPatternMatcher oreMatcher, LiteralSearchIndex aliases) {
 
         private boolean isEmpty() {
-            return modNames.isEmpty() && ores.isEmpty();
+            return modNames.isEmpty() && oreMatcher.isEmpty();
         }
 
         private boolean matches(Metadata metadata) {
             for (String name : metadata.modNames) if (modNames.contains(name)) return true;
-            for (String name : metadata.ores) {
-                for (Pattern pattern : ores) if (pattern.matcher(name)
-                    .find()) return true;
-            }
+            for (String name : metadata.ores) if (oreNames.contains(name)) return true;
             return false;
         }
     }

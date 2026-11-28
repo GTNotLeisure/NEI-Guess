@@ -25,6 +25,7 @@ import com.hfstudio.neiguess.api.Suggestion;
 import com.hfstudio.neiguess.client.input.OverlayKeyBindings;
 import com.hfstudio.neiguess.client.input.PointerCapture;
 import com.hfstudio.neiguess.client.overlay.SuggestionPanelTheme;
+import com.hfstudio.neiguess.client.search.ClientSearchAliases;
 import com.hfstudio.neiguess.config.ModConfig;
 
 import codechicken.lib.gui.GuiDraw;
@@ -52,6 +53,8 @@ public class SuggestOverlay
     private int page = 0;
     private String lastInput = NONE;
     private long lastSearchRevision = -1;
+    private long lastAliasRevision = -1;
+    private int lastItemGeneration = -1;
     private String completion = "";
     private int hovered = -1;
     private boolean visible = false;
@@ -95,13 +98,20 @@ public class SuggestOverlay
 
     private void rebuild(String input, boolean force) {
         long revision = Match.revision();
-        if (!force && input.equals(lastInput) && lastSearchRevision == revision) return;
+        long aliasRevision = ClientSearchAliases.INSTANCE.revision();
+        int itemGeneration = ItemIndexes.generation();
+        if (!force && input.equals(lastInput)
+            && lastSearchRevision == revision
+            && lastAliasRevision == aliasRevision
+            && lastItemGeneration == itemGeneration) return;
         if (!input.equals(lastInput)) {
             page = 0;
             if (input.isBlank()) filter = null;
         }
         lastInput = input;
         lastSearchRevision = revision;
+        lastAliasRevision = aliasRevision;
+        lastItemGeneration = itemGeneration;
         try {
             if (input.isBlank()) {
                 pages = SuggestionEngine.browsePages();

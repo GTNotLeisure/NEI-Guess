@@ -6,49 +6,50 @@ import com.hfstudio.neiguess.Mods;
 
 public enum Mixins implements IMixins {
 
-    POPUP_INPUT(new MixinBuilder("Suggestion popup input capture").addClientMixins("input.MixinGuiScreenInput")
+    MC(new MixinBuilder("Minecraft client input and search")
+        .addClientMixins("input.MixinGuiScreenInput", "search.MixinCreativeSearch")
         .setPhase(Phase.EARLY)),
-    FML_SEARCH(new MixinBuilder("Client configuration and mod list search").addClientMixins("search.MixinFmlSearch")
+    FORGE(new MixinBuilder("Forge client configuration and mod list search").addClientMixins("search.MixinFmlSearch")
         .setPhase(Phase.EARLY)
         .addRequiredMod(Mods.HodgePodge)),
-    WORLD_SEARCH(new MixinBuilder("Client world list search").addClientMixins("search.MixinWorldSearch")
+    ET_FUTURUM(new MixinBuilder("Et Futurum Requiem world list search").addClientMixins("search.MixinWorldSearch")
         .setPhase(Phase.EARLY)
         .addRequiredMod(Mods.EtFuturumRequiem)),
-    NEI_SEARCH(new MixinBuilder("NEI mod and ore search")
-        .addClientMixins("search.MixinNeiSearchFilters", "search.MixinNeiTextSearch", "search.MixinNeiItemSearch")
+    NEI(new MixinBuilder("NEI search and item name overlay")
+        .addClientMixins(
+            "search.MixinNeiSearchFilters",
+            "search.MixinNeiTextSearch",
+            "search.MixinNeiItemSearch",
+            "GuiContainerManagerMixin",
+            "ScreenCaptureMixin")
         .setPhase(Phase.LATE)
         .addRequiredMod(Mods.NotEnoughItems)),
-    AE_SEARCH(new MixinBuilder("Applied Energistics terminal search").addClientMixins("search.MixinAeSearch")
+    AE2(new MixinBuilder("Applied Energistics terminal search").addClientMixins("search.MixinAeSearch")
         .setPhase(Phase.LATE)
         .addRequiredMod(Mods.AppliedEnergistics)),
-    KEYBIND_SEARCH(new MixinBuilder("Controlling key binding search").addClientMixins("search.MixinSearchType")
+    CONTROLLING(new MixinBuilder("Controlling key binding search").addClientMixins("search.MixinSearchType")
         .setPhase(Phase.LATE)
         .addRequiredMod(Mods.Controlling)),
-    P2P_SEARCH(new MixinBuilder("Better P2P tunnel search").addClientMixins("search.MixinP2PSearch")
+    BETTER_P2P(new MixinBuilder("Better P2P tunnel search").addClientMixins("search.MixinP2PSearch")
         .setPhase(Phase.LATE)
         .addRequiredMod(Mods.BetterP2P)),
-    SHADER_SEARCH(new MixinBuilder("Angelica shader option prefix search").addClientMixins("search.MixinShaderSearch")
+    ANGELICA(new MixinBuilder("Angelica shader option prefix search").addClientMixins("search.MixinShaderSearch")
         .setPhase(Phase.LATE)
         .addRequiredMod(Mods.Angelica)),
-    CHANNEL_SEARCH(new MixinBuilder("StructureLib channel suggestions").addClientMixins("search.MixinChannelSearch")
+    STRUCTURE_LIB(new MixinBuilder("StructureLib channel suggestions").addClientMixins("search.MixinChannelSearch")
         .setPhase(Phase.LATE)
         .addRequiredMod(Mods.StructureLib)),
-    FREQUENCY_SEARCH(
-        new MixinBuilder("Wireless Redstone frequency name search").addClientMixins("search.MixinFrequencySearch")
-            .setPhase(Phase.LATE)
-            .addRequiredMod(Mods.WirelessRedstone)),
-    GUIDE_SEARCH(new MixinBuilder("GuideNH document and title search")
+    WR_CBE(new MixinBuilder("Wireless Redstone frequency name search").addClientMixins("search.MixinFrequencySearch")
+        .setPhase(Phase.LATE)
+        .addRequiredMod(Mods.WirelessRedstone)),
+    GUIDE_NH(new MixinBuilder("GuideNH document and title search")
         .addClientMixins(
             "search.MixinGuideSearch",
             "search.MixinGuideTitleSearch",
             "search.MixinGuidePreviewSearch",
             "search.MixinGuidePrefixSearch")
         .setPhase(Phase.LATE)
-        .addRequiredMod(Mods.GuideNH)),
-    ICON_NAMES(
-        new MixinBuilder("NEI icon name overlay").addClientMixins("GuiContainerManagerMixin", "ScreenCaptureMixin")
-            .setPhase(Phase.LATE)
-            .addRequiredMod(Mods.NotEnoughItems));
+        .addRequiredMod(Mods.GuideNH));
 
     private final MixinBuilder builder;
 

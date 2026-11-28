@@ -17,6 +17,7 @@ import net.minecraftforge.oredict.OreDictionary;
 
 import com.asdflj.nech.utils.Match;
 import com.hfstudio.neiguess.NEIGuess;
+import com.hfstudio.neiguess.client.search.PhoneticNameIndex;
 import com.hfstudio.neiguess.config.ModConfig;
 
 import codechicken.nei.ItemList;
@@ -31,7 +32,7 @@ public class ItemIndexes {
     private static final int MAX_LINK_HITS = 8;
 
     private record NameIndex(String[] names, String[] lower, boolean[] ascii, ItemStack[] stacks, int[] lengthStart,
-        Map<String, Integer> byName) {
+        Map<String, Integer> byName, PhoneticNameIndex phonetic) {
 
         static final NameIndex EMPTY = new NameIndex(
             new String[0],
@@ -39,7 +40,8 @@ public class ItemIndexes {
             new boolean[0],
             new ItemStack[0],
             new int[MAX_NAME + 2],
-            new HashMap<>());
+            new HashMap<>(),
+            null);
     }
 
     public enum LinkKind {
@@ -57,7 +59,7 @@ public class ItemIndexes {
     private static volatile NameIndex names = NameIndex.EMPTY;
     private static volatile Map<String, Link[]> links = new HashMap<>();
     private static volatile int generation = 0;
-    private static NarrowCache narrow;
+    private static volatile NarrowCache narrow;
 
     private ItemIndexes() {}
 
@@ -113,7 +115,7 @@ public class ItemIndexes {
             if (raw == null) return null;
             String name = EnumChatFormatting.getTextWithoutFormattingCodes(raw)
                 .trim();
-            if (name.length() < MIN_NAME || name.length() > MAX_NAME || name.indexOf('§') >= 0) return null;
+            if (name.isEmpty() || name.indexOf('§') >= 0) return null;
             return isRawKey(name) ? null : name;
         } catch (Throwable t) {
             return null;
@@ -152,10 +154,10 @@ public class ItemIndexes {
             ascii[i] = PinyinBridge.isAscii(s);
             stacks[i] = byName.get(s);
             pos.put(s, i);
-            lengthStart[s.length()] = i;
+            lengthStart[Math.min(s.length(), MAX_NAME + 1)] = i;
         }
         for (int l = MAX_NAME; l >= 0; l--) lengthStart[l] = Math.min(lengthStart[l], lengthStart[l + 1]);
-        return new NameIndex(sorted, lower, ascii, stacks, lengthStart, pos);
+        return new NameIndex(sorted, lower, ascii, stacks, lengthStart, pos, new PhoneticNameIndex(lower));
     }
 
     private static Map<String, Link[]> buildLinks(NameIndex index, Map<String, ItemStack> byId,
@@ -263,33 +265,51 @@ public class ItemIndexes {
         if (input == null || input.isBlank() || limit <= 0 || idx.names().length == 0) return out;
         String key = input.trim()
             .toLowerCase(Locale.ROOT);
-        if (key.length() > MAX_NAME) return out;
         int[] matches = matches(idx, key, prefixOnly);
-        boolean pinyin = Match.isPinyinEnabled() && PinyinBridge.isAscii(key);
-        for (int pass = 0; pass < 2 && out.size() < limit; pass++) {
-            for (int i : matches) {
+        boolean pinyin = Match.isPinyinEnabled();
+        List<String> substrings = new ArrayList<>(limit);
+        for (int i : matches) {
+            boolean prefix = prefixOnly || idx.lower()[i].startsWith(key)
+                || pinyin && !idx.ascii()[i] && PinyinBridge.begins(idx.lower()[i], key);
+            if (prefix) {
+                out.add(idx.names()[i]);
                 if (out.size() >= limit) break;
-                boolean prefix = idx.lower()[i].startsWith(key)
-                    || pinyin && !idx.ascii()[i] && PinyinBridge.begins(idx.names()[i], key);
-                if (prefix == (pass == 0)) out.add(idx.names()[i]);
-            }
+            } else if (substrings.size() < limit) substrings.add(idx.names()[i]);
+        }
+        for (String name : substrings) {
+            if (out.size() >= limit) break;
+            out.add(name);
         }
         return out;
     }
 
     private static int[] matches(NameIndex idx, String key, boolean prefixOnly) {
-        boolean pinyin = Match.isPinyinEnabled() && PinyinBridge.isAscii(key);
+        boolean pinyin = Match.isPinyinEnabled();
         long revision = Match.revision();
         NarrowCache c = narrow;
+        if (c != null && c.index() == idx
+            && c.prefixOnly() == prefixOnly
+            && c.revision() == revision
+            && c.key()
+                .equals(key))
+            return c.matches();
+        if (pinyin) {
+            int[] found = idx.phonetic()
+                .search(key, prefixOnly);
+            if (!prefixOnly && key.length() == 1) {
+                int count = 0;
+                for (int index : found) {
+                    if (idx.lower()[index].contains(key)
+                        || !idx.ascii()[index] && PinyinBridge.begins(idx.lower()[index], key)) found[count++] = index;
+                }
+                found = Arrays.copyOf(found, count);
+            }
+            narrow = new NarrowCache(idx, key, prefixOnly, revision, found);
+            return found;
+        }
         int[] candidates = null;
         if (c != null && c.index() == idx && c.prefixOnly() == prefixOnly && c.revision() == revision) {
-            if (c.key()
-                .equals(key)) return c.matches();
-            // A one-letter pinyin query only checked prefixes, so it cannot narrow a substring search.
-            boolean narrowable = prefixOnly || !pinyin
-                || c.key()
-                    .length() >= 2;
-            if (narrowable && key.startsWith(c.key())) candidates = c.matches();
+            if (key.startsWith(c.key())) candidates = c.matches();
         }
         int total = candidates == null ? idx.names().length : candidates.length;
         int[] found = new int[Math.min(total, 1024)];
@@ -298,11 +318,6 @@ public class ItemIndexes {
             int i = candidates == null ? n : candidates[n];
             String lower = idx.lower()[i];
             boolean hit = prefixOnly ? lower.startsWith(key) : lower.contains(key);
-            if (!hit && pinyin && !idx.ascii()[i]) {
-                String name = idx.names()[i];
-                hit = PinyinBridge.begins(name, key)
-                    || !prefixOnly && key.length() >= 2 && PinyinBridge.contains(name, key);
-            }
             if (!hit) continue;
             if (count == found.length) found = Arrays.copyOf(found, found.length * 2);
             found[count++] = i;

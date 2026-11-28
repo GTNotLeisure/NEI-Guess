@@ -26,6 +26,8 @@ public class SearchTargets {
         "extracells.gui.GuiFluidStorage:updateFluids",
         "witchinggadgets.client.ThaumonomiconIndexSearcher:buildEntryList",
         "net.glease.tc4tweak.modules.researchBrowser.ThaumonomiconIndexSearcher:buildEntryList",
+        "com.emil.tcautoresearchgtnh.client.GuiAspectWeights:updateFilter()V",
+        "com.emil.tcautoresearchgtnh.client.GuiResearchQueue:applyFilter()V",
         "appeng.client.gui.implementations.GuiInterfaceTerminal:refreshList",
         "appeng.client.gui.implementations.GuiInterfaceTerminal:itemStackMatchesSearchTerm",
         "appeng.client.gui.implementations.GuiInterfaceTerminal:interfaceSectionMatchesSearchTerm",

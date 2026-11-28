@@ -3,6 +3,7 @@
   "minVersion": "0.8.5-GTNH",
   "package": "com.hfstudio.neiguess.mixins.early",
   "refmap": "mixins.neiguess.refmap.json",
+  "plugin": "com.hfstudio.neiguess.core.SearchMixinPlugin",
   "target": "@env(DEFAULT)",
   "injectors": {
     "maxShiftBy": 5

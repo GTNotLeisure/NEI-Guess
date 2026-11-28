@@ -17,6 +17,7 @@ import java.util.regex.Pattern;
 import com.asdflj.nech.NechConfig;
 import com.asdflj.nech.NechConfig.Spell;
 import com.asdflj.nech.utils.matching.InputPlanCache;
+import com.asdflj.nech.utils.matching.PhoneticContexts;
 import com.asdflj.nech.utils.matching.QueryParser;
 import com.asdflj.nech.utils.matching.RegexSupport;
 
@@ -35,6 +36,10 @@ public class Match {
     private static final List<BiPredicate<String, String>> additionalMatchers = new CopyOnWriteArrayList<>();
     private static final Set<TreeSearcher<?>> searchers = Collections.newSetFromMap(new WeakHashMap<>());
     private static final InputPlanCache inputCache = new InputPlanCache(32);
+    private static final PhoneticContexts matchingContexts = new PhoneticContexts(
+        () -> new PinIn(new Loader()).config()
+            .accelerate(true)
+            .commit());
     private static final AtomicLong revision = new AtomicLong();
     private static PhoneticSettings phoneticSettings;
     private static volatile boolean pinyinEnabled = true;
@@ -94,10 +99,9 @@ public class Match {
     public static boolean containsRaw(String text, String query) {
         if (text == null || query == null) return false;
         if (text.contains(query)) return true;
-        if (!pinyinEnabled) return false;
-        synchronized (context) {
-            return context.contains(text, query);
-        }
+        if (!pinyinEnabled || isAscii(text)) return false;
+        return matchingContexts.current()
+            .contains(text, query);
     }
 
     public static boolean begins(String text, String query) {
@@ -107,10 +111,9 @@ public class Match {
     public static boolean beginsRaw(String text, String query) {
         if (text == null || query == null) return false;
         if (text.startsWith(query)) return true;
-        if (!pinyinEnabled) return false;
-        synchronized (context) {
-            return context.begins(text, query);
-        }
+        if (!pinyinEnabled || isAscii(text)) return false;
+        return matchingContexts.current()
+            .begins(text, query);
     }
 
     public static boolean contains(CharSequence text, CharSequence query) {
@@ -137,10 +140,9 @@ public class Match {
     public static boolean equals(String text, Object query) {
         if (text == null || !(query instanceof String input)) return false;
         if (text.equals(input)) return true;
-        if (!pinyinEnabled) return false;
-        synchronized (context) {
-            return context.matches(text, input);
-        }
+        if (!pinyinEnabled || isAscii(text)) return false;
+        return matchingContexts.current()
+            .matches(text, input);
     }
 
     public static Matcher matcher(Pattern pattern, CharSequence text) {
@@ -165,10 +167,8 @@ public class Match {
         if (literal == null) return original;
         if (original.regionStart() != 0 || original.regionEnd() != text.length() || original.pattern() != pattern)
             return original;
-        boolean found = original.find();
-        original.reset();
-        if (found) return original;
         String value = text.toString();
+        if (value.contains(literal)) return original;
         if ((pattern.flags() & Pattern.CASE_INSENSITIVE) != 0) {
             value = value.toLowerCase(Locale.ROOT);
             literal = literal.toLowerCase(Locale.ROOT);
@@ -197,12 +197,11 @@ public class Match {
         if (trailing) return begins(text, literal);
         if (leading) {
             if (!pinyinEnabled) return false;
-            synchronized (context) {
-                for (int index = 0; index <= text.length(); index++) {
-                    if (context.matches(text.substring(index), literal)) return true;
-                }
-                return false;
+            PinIn matcher = matchingContexts.current();
+            for (int index = 0; index <= text.length(); index++) {
+                if (matcher.matches(text.substring(index), literal)) return true;
             }
+            return false;
         }
         return equals(text, literal) || additionalMatch(text, literal);
     }
@@ -245,6 +244,11 @@ public class Match {
         return false;
     }
 
+    private static boolean isAscii(String text) {
+        for (int index = 0; index < text.length(); index++) if (text.charAt(index) >= 128) return false;
+        return true;
+    }
+
     public static void onConfigChange() {
         refresh();
     }
@@ -266,16 +270,8 @@ public class Match {
                 NechConfig.EnableFU2V,
                 NechConfig.KeyboardType);
             if (!current.equals(phoneticSettings)) {
-                context.config()
-                    .fZh2Z(current.zhToZ)
-                    .fSh2S(current.shToS)
-                    .fCh2C(current.chToC)
-                    .fAng2An(current.angToAn)
-                    .fIng2In(current.ingToIn)
-                    .fEng2En(current.engToEn)
-                    .fU2V(current.uToV)
-                    .keyboard(current.keyboard.get())
-                    .commit();
+                applySettings(context.config(), current).commit();
+                matchingContexts.configure(config -> applySettings(config, current));
                 searchers.forEach(TreeSearcher::refresh);
                 phoneticSettings = current;
             }
@@ -285,6 +281,17 @@ public class Match {
 
     private record PhoneticSettings(boolean zhToZ, boolean shToS, boolean chToC, boolean angToAn, boolean ingToIn,
         boolean engToEn, boolean uToV, Spell keyboard) {}
+
+    private static PinIn.Config applySettings(PinIn.Config config, PhoneticSettings settings) {
+        return config.fZh2Z(settings.zhToZ)
+            .fSh2S(settings.shToS)
+            .fCh2C(settings.chToC)
+            .fAng2An(settings.angToAn)
+            .fIng2In(settings.ingToIn)
+            .fEng2En(settings.engToEn)
+            .fU2V(settings.uToV)
+            .keyboard(settings.keyboard.get());
+    }
 
     public static class Loader extends DictLoader.Default {
 

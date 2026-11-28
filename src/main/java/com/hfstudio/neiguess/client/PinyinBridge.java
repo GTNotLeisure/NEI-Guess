@@ -21,7 +21,7 @@ public class PinyinBridge {
         String t = text.toLowerCase(Locale.ROOT), q = query.toLowerCase(Locale.ROOT);
         if (t.startsWith(q) || !prefixOnly && t.contains(q)) return true;
         if (!Match.isPinyinEnabled()) return false;
-        if (!isAscii(q) || isAscii(t)) return false;
+        if (isAscii(t)) return false;
         return begins(text, q) || !prefixOnly && contains(text, q);
     }
 
