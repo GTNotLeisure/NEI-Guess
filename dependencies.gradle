@@ -9,7 +9,9 @@ dependencies {
 
     compileOnlyApi("com.github.GTNewHorizons:GuideNH:1.3.58:dev") { transitive = false }
 
-    shadowImplementation("dev.ghostflyby:PinIn:1.7.2")
+    shadowImplementation("dev.ghostflyby:PinIn:1.7.2") {
+        exclude group: "it.unimi.dsi", module: "fastutil"
+    }
     shadowImplementation("org.luaj:luaj-jse:3.0.1")
 
     runtimeOnlyNonPublishable('com.github.GTNewHorizons:Applied-Energistics-2-Unofficial:rv3-beta-1095-GTNH:dev')

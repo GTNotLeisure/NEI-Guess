@@ -1,4 +1,5 @@
 import com.diffplug.spotless.LineEnding
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
     id("com.gtnewhorizons.gtnhconvention")
@@ -13,11 +14,20 @@ minecraft {
 }
 
 tasks.withType<JavaCompile>().configureEach {
+    options.encoding = "UTF-8"
     options.annotationProcessorPath = configurations.annotationProcessor.get()
 }
 
 tasks.withType<Test>().configureEach {
     useJUnitPlatform()
+}
+
+tasks.named<ShadowJar>("shadowJar") {
+    mergeServiceFiles()
+    minimize {
+        exclude(dependency("dev.ghostflyby:PinIn:.*"))
+        exclude(dependency("org.luaj:luaj-jse:.*"))
+    }
 }
 
 val runConfigs = listOf(
